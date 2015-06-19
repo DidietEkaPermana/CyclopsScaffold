@@ -1,0 +1,14 @@
+C:\Users\didiet.permana\AppData\Local\Microsoft\VisualStudio\12.0Exp\Extensions\Author Name\CyclopsScaffoldExtension\1.0\\CyclopsScaffold.dll
+C:\Users\didiet.permana\AppData\Local\Microsoft\VisualStudio\12.0Exp\Extensions\Author Name\CyclopsScaffoldExtension\1.0\\extension.vsixmanifest
+C:\Users\didiet.permana\AppData\Local\Microsoft\VisualStudio\12.0Exp\Extensions\Author Name\CyclopsScaffoldExtension\1.0\\Templates\CustomCodeGenerator\CustomTextTemplate.cs.t4
+C:\Users\didiet.permana\AppData\Local\Microsoft\VisualStudio\12.0Exp\Extensions\Author Name\CyclopsScaffoldExtension\1.0\\CyclopsScaffold.pdb
+C:\Users\didiet.permana\AppData\Local\Microsoft\VisualStudio\12.0Exp\Extensions\Didiet Eka Permana\Cyclops Scaffold Extension\1.0\\CyclopsScaffold.dll
+C:\Users\didiet.permana\AppData\Local\Microsoft\VisualStudio\12.0Exp\Extensions\Didiet Eka Permana\Cyclops Scaffold Extension\1.0\\extension.vsixmanifest
+C:\Users\didiet.permana\AppData\Local\Microsoft\VisualStudio\12.0Exp\Extensions\Didiet Eka Permana\Cyclops Scaffold Extension\1.0\\cyclops.ico
+C:\Users\didiet.permana\AppData\Local\Microsoft\VisualStudio\12.0Exp\Extensions\Didiet Eka Permana\Cyclops Scaffold Extension\1.0\\Templates\CustomCodeGenerator\CustomTextTemplate.cs.t4
+C:\Users\didiet.permana\AppData\Local\Microsoft\VisualStudio\12.0Exp\Extensions\Didiet Eka Permana\Cyclops Scaffold Extension\1.0\\CyclopsScaffold.pdb
+C:\Users\didiet.permana\AppData\Local\Microsoft\VisualStudio\12.0Exp\Extensions\Didiet Eka Permana\Cyclops Scaffold Extension\1.0\\Templates\CustomCodeGenerator\Controller.cs.t4
+C:\Users\didiet.permana\AppData\Local\Microsoft\VisualStudio\12.0Exp\Extensions\Didiet Eka Permana\Cyclops Scaffold Extension\1.0\\Templates\CustomCodeGenerator\JsonUIModels.cs.tt
+C:\Users\didiet.permana\AppData\Local\Microsoft\VisualStudio\12.0Exp\Extensions\Didiet Eka Permana\Cyclops Scaffold Extension\1.0\\Templates\CustomCodeGenerator\JsonUIModels.cs.t4
+C:\Users\didiet.permana\AppData\Local\Microsoft\VisualStudio\12.0Exp\Extensions\Didiet Eka Permana\Cyclops Scaffold Extension\1.0\\Templates\CustomCodeGenerator\Views.cs.t4
+C:\Users\didiet.permana\AppData\Local\Microsoft\VisualStudio\12.0Exp\Extensions\Didiet Eka Permana\Cyclops Scaffold Extension\1.0\\Templates\CustomCodeGenerator\Models.cs.t4
