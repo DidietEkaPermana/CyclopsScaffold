@@ -47,26 +47,12 @@ namespace CyclopsScaffold
         public override void GenerateCode()
         {
             var project = Context.ActiveProject;
-            var selectionRelativePath = "Controllers\\";
 
-            AddMvcControllers(project, selectionRelativePath);
-
-            selectionRelativePath = "Models\\";
-            AddMvcModels(project, selectionRelativePath);
-
-            selectionRelativePath = "Views\\";
-            AddMvcViews(project, selectionRelativePath);
-        }
-
-        private void AddMvcControllers(Project project, string selectionRelativePath)
-        {
-            // Get the selected code type
             var codeType = _viewModel.SelectedModelType.CodeType;
-            var defaultNamespace = (project.Name + ".Controllers");// GetDefaultNamespace();
 
-            //get context
             ICodeTypeService codeTypeService = (ICodeTypeService)Context
                     .ServiceProvider.GetService(typeof(ICodeTypeService));
+
 
             var modelTypes = codeTypeService
                                         .GetAllCodeTypes(project)
@@ -78,6 +64,26 @@ namespace CyclopsScaffold
             // Get the Entity Framework Meta Data
             IEntityFrameworkService efService = (IEntityFrameworkService)Context.ServiceProvider.GetService(typeof(IEntityFrameworkService));
             ModelMetadata efMetadata = efService.AddRequiredEntity(Context, dbContextClass.TypeName, codeType.FullName);
+
+            var selectionRelativePath = "Controllers\\";
+            AddMvcControllers(project, selectionRelativePath, codeType, dbContextClass, efMetadata);
+
+            selectionRelativePath = "Models\\";
+            AddMvcModels(project, selectionRelativePath);
+
+            selectionRelativePath = "Views\\";
+            AddMvcViews(project, selectionRelativePath, efMetadata);
+        }
+
+        private void AddMvcControllers(Project project, string selectionRelativePath, CodeType codeType, ModelType dbContextClass, ModelMetadata efMetadata)
+        {
+            // Get the selected code type
+            var defaultNamespace = (project.Name + ".Controllers");
+
+            //get context
+            ICodeTypeService codeTypeService = (ICodeTypeService)Context
+                    .ServiceProvider.GetService(typeof(ICodeTypeService));
+
 
             string modelTypeVariable = GetTypeVariable(codeType.Name);
 
@@ -124,7 +130,7 @@ namespace CyclopsScaffold
                 skipIfExists: false);
         }
 
-        private void AddMvcViews(Project project, string selectionRelativePath)
+        private void AddMvcViews(Project project, string selectionRelativePath, ModelMetadata efMetadata)
         {
             // Get the selected code type
             var codeType = _viewModel.SelectedModelType.CodeType;
@@ -136,7 +142,8 @@ namespace CyclopsScaffold
             var parameters = new Dictionary<string, object>()
             {
                 {"ModelType", codeType},
-                {"Namespace", defaultNamespace}
+                {"Namespace", defaultNamespace},
+                {"MetadataModel", efMetadata}
             };
 
             // Add the custom scaffolding item from T4 template.

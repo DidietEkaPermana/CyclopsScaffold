@@ -46,6 +46,23 @@ namespace <#= Namespace #>
 
 		#region API request
 		[ValidateAntiForgeryToken]
+		public async Task<JsonResult> AddUpdate<#= ModelType.Name #>(<#= ModelType.Name #> <#= dataParameter #>)
+        {
+			JsonData data = new JsonData();
+
+            try
+            {
+                
+            }
+            catch (Exception ex)
+            {
+                data.errors = ex.Message;
+            }
+
+			return Json(data);
+        }
+
+		[ValidateAntiForgeryToken]
 		public async Task<JsonResult> Create<#= ModelType.Name #>(<#= ModelType.Name #> <#= dataParameter #>)
         {
 			JsonData data = new JsonData();
@@ -56,7 +73,7 @@ namespace <#= Namespace #>
 
                 await db.SaveChangesAsync();
 
-                data.data = <#= dataParameter #>;
+                data.payload = <#= dataParameter #>;
 
 				data.total = 1;
             }
@@ -69,6 +86,48 @@ namespace <#= Namespace #>
         }
 
 		[ValidateAntiForgeryToken]
+		public async Task<JsonResult> Get<#= ModelType.Name #>List()
+		{
+			JsonData data = new JsonData();
+
+            try
+            {
+				var <#= EntitySetVariable #> = db.<#= entitySetName #>;
+
+				data.payload = (await <#= EntitySetVariable #>.ToListAsync())
+								.Select(p => new <#= ModelType.Name #> {
+<#
+	IEnumerable<PropertyMetadata> properties = MetadataModel.Properties;
+	bool isFirst = true;
+	foreach (PropertyMetadata property in properties) {
+
+		if(property.AssociationDirection != Microsoft.AspNet.Scaffolding.Core.Metadata.AssociationDirection.None)
+			continue;
+
+        if(isFirst) {
+			isFirst = false;
+#>									<#= property.PropertyName #> = p.<#= property.PropertyName #>
+<#
+        }
+		else{
+#>									,<#= property.PropertyName #> = p.<#= property.PropertyName #>
+<#
+        }
+	}
+#>
+								});
+
+				data.total = ((List<<#= ModelType.Name #>>)data.payload).Count();
+            }
+            catch (Exception ex)
+            {
+                data.errors = ex.Message;
+            }
+
+            return Json(data);
+		}
+
+		[ValidateAntiForgeryToken]
 		public async Task<JsonResult> Read<#= ModelType.Name #>(int iPage, int iLength, string strSearch)
 		{
 			JsonData data = new JsonData();
@@ -79,10 +138,9 @@ namespace <#= Namespace #>
 
 				var <#= EntitySetVariable #> = db.<#= entitySetName #>.Skip(iPageStart).Take((int)iLength);
 
-				data.data = await <#= EntitySetVariable #>.ToListAsync();
+				data.payload = await <#= EntitySetVariable #>.ToListAsync();
 
-				//data.total = ((List<<#= ModelType.Name #>>)data.data).Count();
-				data.total = db.<#= entitySetName #>.Count();
+				data.total = ((List<<#= ModelType.Name #>>)data.payload).Count();
             }
             catch (Exception ex)
             {
@@ -102,7 +160,7 @@ namespace <#= Namespace #>
                 db.Entry(<#= dataParameter #>).State = EntityState.Modified;
                 await db.SaveChangesAsync();
 
-                data.data = <#= dataParameter #>;
+                data.payload = <#= dataParameter #>;
 
 				data.total = 1;
             }
@@ -125,7 +183,7 @@ namespace <#= Namespace #>
                 db.<#= entitySetName #>.Remove(<#= dataParameter #>);
                 await db.SaveChangesAsync();
 
-                data.data = <#= dataParameter #>;
+                data.payload = <#= dataParameter #>;
 
 				data.total = 1;
             }

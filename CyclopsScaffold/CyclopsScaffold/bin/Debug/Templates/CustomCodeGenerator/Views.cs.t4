@@ -1,89 +1,84 @@
 ﻿<#@ template language="C#" HostSpecific="True" #>
+<#@ assembly name="System.Core" #>
 <#@ assembly name="EnvDTE" #>
+<#@ ScaffoldingAssembly Processor="ScaffoldingAssemblyLoader" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="Microsoft.AspNet.Scaffolding.Core.Metadata" #>
 <#@ output extension=".cshtml" #>
 <#@ parameter name="ModelType" type="EnvDTE.CodeType" #>
 <#@ parameter type="System.String" name="Namespace" #>
+<#@ parameter type="Microsoft.AspNet.Scaffolding.Core.Metadata.ModelMetadata" name="MetadataModel" #>
 @{
     ViewBag.Title = "<#= ModelType.Name #>";
 }
 
 @section Headers {
-    <link href="~/Content/bootstrap-select.min.css" rel="stylesheet" />
-    <link href="~/Content/bootstrap-datetimepicker.min.css" rel="stylesheet" />
+    <link href="~/Content/bsComp/bootstrap-select.min.css" rel="stylesheet" />
+    <link href="~/Content/bsComp/bootstrap-datetimepicker.min.css" rel="stylesheet" />
     <style>
         .bootstrap-select.btn-group:not(.input-group-btn) {
-            margin-bottom: 0px;
+            margin-top: 10px;
+        }
+
+        input, select, textarea {
+            max-width: none;
         }
     </style>
 }
 @Html.AntiForgeryToken()
 <h2>@ViewBag.Title</h2>
 
-<div class="container-fluid row clearfix" id="<#= ModelType.Name #>Table">
-    <div class="navbar navbar-default">
-        <div class="navbar-header">
-            <button class="navbar-toggle" data-target=".navbar-inverse-collapse" data-toggle="collapse" type="button">
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-            </button>
-        </div>
-        <div class="navbar-collapse navbar-inverse-collapse collapse">
-            <ul class="nav navbar-nav">
-                <li><a href="#" onclick="<#= ModelType.Name #>Table_Add_Click()">Add</a></li>
-            </ul>
-            <form class="navbar-form navbar-right">
-                <input class="form-control col-lg-8" placeholder="Search" type="text" id="<#= ModelType.Name #>Table_Search" onkeyup="<#= ModelType.Name #>Table_Search_Change()" />
-            </form>
-        </div>
-    </div>
-    <table class="table table-hover">
-        <thead id="<#= ModelType.Name #>Table_Header"></thead>
-        <tbody id="<#= ModelType.Name #>Table_Content"></tbody>
-    </table>
-    <div class="navbar navbar-default">
-        <div class="navbar-header">
-            <button class="navbar-toggle" data-target=".navbar-inverse-collapse" data-toggle="collapse" type="button">
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-            </button>
-        </div>
-        <div class="navbar-collapse navbar-inverse-collapse collapse">
-            <ul class="nav navbar-nav">
-                <li>
-                    <select id="<#= ModelType.Name #>Table_PageSize" onchange="<#= ModelType.Name #>Table_PageSize_Change()"></select>
-                </li>
-            </ul>
-            <ul class="nav navbar-nav navbar-right" id="gridPageBar"></ul>
-        </div>
-    </div>
-</div>
+<div id="@ViewBag.Title"></div>
 
-<div class="modal fade" id="<#= ModelType.Name #>AddEditModal">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-                <h4 class="modal-title">Modal title</h4>
-            </div>
-            <div class="modal-body">
-                <form class="form-horizontal">
-                    <input type="hidden" class="form-control" id="input<#= ModelType.Name #>Id">
-                    <fieldset>
-                        <div class="form-group">
-                            <label for="inputName" class="col-lg-2 control-label">Name</label>
-                            <div class="col-lg-10">
-                                <input type="text" class="form-control" id="inputName" placeholder="<#= ModelType.Name #> Name">
-                            </div>
-                        </div>
-                    </fieldset>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <a class="btn btn-default" data-dismiss="modal">Close</a>
-                <button type="button" class="btn btn-primary" onclick="Save<#= ModelType.Name #>_Click()">Save changes</button>
-            </div>
-        </div><!-- /.modal-content -->
-    </div><!-- /.modal-dialog -->
-</div><!-- /.modal -->
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script src="~/Scripts/moment.min.js"></script>
+    <script src="~/Scripts/bsComp/bootstrap-select.min.js"></script>
+    <script src="~/Scripts/bsComp/bootstrap-datetimepicker.min.js"></script>
+    <script src="~/Scripts/bsComp/bootstrapGrid.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('#@ViewBag.Title').grid({
+                pageSizeOption: [5, 10, 15, 25, 50],
+                fields: [
+<#
+	IEnumerable<PropertyMetadata> properties = MetadataModel.Properties;
+	bool isFirst = true;
+	foreach (PropertyMetadata property in properties) {
+		if(property.AssociationDirection != Microsoft.AspNet.Scaffolding.Core.Metadata.AssociationDirection.None)
+			continue;
+
+        if(isFirst) {
+			isFirst = false;
+#>					{ title: '<#= property.PropertyName #>', name: '<#= property.PropertyName #>', datatype: '<#= getType(property.ShortTypeName) #>', <# if(property.IsPrimaryKey)#>key: true, display: false <#;#>}
+<#
+        }
+		else{
+#>					,{ title: '<#= property.PropertyName #>', name: '<#= property.PropertyName #>', datatype: '<#= getType(property.ShortTypeName) #>', <# if(property.ShortTypeName == "DateTime")#>format: 'DD MMM YYYY HH:mm:ss',<#;#><# if(property.IsPrimaryKey)#>key: true,<#;#> display: true }
+<#
+        }
+	}
+#>
+                ],
+                gridAddUpdateData: "/<#= ModelType.Name #>/AddUpdate<#= ModelType.Name #>",
+                gridGetData: "/<#= ModelType.Name #>/Get<#= ModelType.Name #>List",
+                gridDeleteData: "/<#= ModelType.Name #>/Delete<#= ModelType.Name #>"
+            });
+        })
+    </script>
+}
+
+<#+
+	string getType(string efType){
+		switch(efType){
+			case "DateTime":
+				return "date";
+			case "int":
+				return "int";
+			default:
+				return "string";
+		}
+    }
+ #>

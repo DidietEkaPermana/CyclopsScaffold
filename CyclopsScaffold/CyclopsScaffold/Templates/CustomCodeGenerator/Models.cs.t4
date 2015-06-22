@@ -11,12 +11,12 @@ namespace <#= Namespace #>
     {
         public JsonData()
         {
-            data = null;
+            payload = null;
             message = string.Empty;
             total = 0;
         }
 
-        public object data;
+        public object payload;
         public string message;
         public int total;
         public string errors;

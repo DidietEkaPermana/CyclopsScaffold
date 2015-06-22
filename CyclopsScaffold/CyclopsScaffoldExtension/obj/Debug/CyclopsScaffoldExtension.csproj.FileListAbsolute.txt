@@ -10,3 +10,15 @@ C:\Didiet\Project\Scaffolding\CyclopsScaffold\CyclopsScaffold\CyclopsScaffoldExt
 C:\Didiet\Project\Scaffolding\CyclopsScaffold\CyclopsScaffold\CyclopsScaffoldExtension\bin\Debug\Templates\CustomCodeGenerator\Controller.cs.t4
 C:\Didiet\Project\Scaffolding\CyclopsScaffold\CyclopsScaffold\CyclopsScaffoldExtension\bin\Debug\Templates\CustomCodeGenerator\Views.cs.t4
 C:\Didiet\Project\Scaffolding\CyclopsScaffold\CyclopsScaffold\CyclopsScaffoldExtension\bin\Debug\Templates\CustomCodeGenerator\Models.cs.t4
+C:\Didiet\MyGIT\CyclopsScaffold\CyclopsScaffold\CyclopsScaffoldExtension\bin\Debug\Templates\CustomCodeGenerator\Models.cs.t4
+C:\Didiet\MyGIT\CyclopsScaffold\CyclopsScaffold\CyclopsScaffoldExtension\bin\Debug\Templates\CustomCodeGenerator\Views.cs.t4
+C:\Didiet\MyGIT\CyclopsScaffold\CyclopsScaffold\CyclopsScaffoldExtension\bin\Debug\Templates\CustomCodeGenerator\Controller.cs.t4
+C:\Didiet\MyGIT\CyclopsScaffold\CyclopsScaffold\CyclopsScaffoldExtension\bin\Debug\cyclops.ico
+C:\Didiet\MyGIT\CyclopsScaffold\CyclopsScaffold\CyclopsScaffoldExtension\bin\Debug\CyclopsScaffoldExtension.vsix
+C:\Didiet\MyGIT\CyclopsScaffold\CyclopsScaffold\CyclopsScaffoldExtension\bin\Debug\extension.vsixmanifest
+C:\Didiet\MyGIT\CyclopsScaffold\CyclopsScaffold\CyclopsScaffoldExtension\bin\Debug\CyclopsScaffold.dll
+C:\Didiet\MyGIT\CyclopsScaffold\CyclopsScaffold\CyclopsScaffoldExtension\bin\Debug\CyclopsScaffold.pdb
+C:\Didiet\MyGIT\CyclopsScaffold\CyclopsScaffold\CyclopsScaffoldExtension\obj\Debug\CyclopsScaffoldExtension.csprojResolveAssemblyReference.cache
+C:\Didiet\MyGIT\CyclopsScaffold\CyclopsScaffold\CyclopsScaffoldExtension\obj\Debug\CyclopsScaffoldExtension.dll
+C:\Didiet\MyGIT\CyclopsScaffold\CyclopsScaffold\CyclopsScaffoldExtension\obj\Debug\CyclopsScaffoldExtension.pdb
+C:\Didiet\MyGIT\CyclopsScaffold\CyclopsScaffold\CyclopsScaffoldExtension\obj\Debug\extension.vsixmanifest

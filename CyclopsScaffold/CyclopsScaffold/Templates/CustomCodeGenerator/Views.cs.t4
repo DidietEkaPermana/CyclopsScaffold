@@ -1,403 +1,84 @@
 ﻿<#@ template language="C#" HostSpecific="True" #>
+<#@ assembly name="System.Core" #>
 <#@ assembly name="EnvDTE" #>
+<#@ ScaffoldingAssembly Processor="ScaffoldingAssemblyLoader" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="Microsoft.AspNet.Scaffolding.Core.Metadata" #>
 <#@ output extension=".cshtml" #>
 <#@ parameter name="ModelType" type="EnvDTE.CodeType" #>
 <#@ parameter type="System.String" name="Namespace" #>
+<#@ parameter type="Microsoft.AspNet.Scaffolding.Core.Metadata.ModelMetadata" name="MetadataModel" #>
 @{
     ViewBag.Title = "<#= ModelType.Name #>";
 }
 
 @section Headers {
-    <link href="~/Content/bootstrap-select.min.css" rel="stylesheet" />
-    <link href="~/Content/bootstrap-datetimepicker.min.css" rel="stylesheet" />
+    <link href="~/Content/bsComp/bootstrap-select.min.css" rel="stylesheet" />
+    <link href="~/Content/bsComp/bootstrap-datetimepicker.min.css" rel="stylesheet" />
     <style>
         .bootstrap-select.btn-group:not(.input-group-btn) {
-            margin-bottom: 0px;
+            margin-top: 10px;
+        }
+
+        input, select, textarea {
+            max-width: none;
         }
     </style>
 }
 @Html.AntiForgeryToken()
 <h2>@ViewBag.Title</h2>
 
-<div class="container-fluid row clearfix" id="<#= ModelType.Name #>Table">
-    <div class="navbar navbar-default">
-        <div class="navbar-header">
-            <button class="navbar-toggle" data-target=".navbar-inverse-collapse" data-toggle="collapse" type="button">
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-            </button>
-        </div>
-        <div class="navbar-collapse navbar-inverse-collapse collapse">
-            <ul class="nav navbar-nav">
-                <li><a href="#" onclick="<#= ModelType.Name #>Table_Add_Click()">Add</a></li>
-            </ul>
-            <form class="navbar-form navbar-right">
-                <input class="form-control col-lg-8" placeholder="Search" type="text" id="<#= ModelType.Name #>Table_Search" onkeyup="<#= ModelType.Name #>Table_Search_Change()" />
-            </form>
-        </div>
-    </div>
-    <table class="table table-hover">
-        <thead id="<#= ModelType.Name #>Table_Header"></thead>
-        <tbody id="<#= ModelType.Name #>Table_Content"></tbody>
-    </table>
-    <div class="navbar navbar-default">
-        <div class="navbar-header">
-            <button class="navbar-toggle" data-target=".navbar-inverse-collapse" data-toggle="collapse" type="button">
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-                <span class="icon-bar"></span>
-            </button>
-        </div>
-        <div class="navbar-collapse navbar-inverse-collapse collapse">
-            <ul class="nav navbar-nav">
-                <li>
-                    <select id="<#= ModelType.Name #>Table_PageSize" onchange="<#= ModelType.Name #>Table_PageSize_Change()"></select>
-                </li>
-            </ul>
-            <ul class="nav navbar-nav navbar-right" id="gridPageBar"></ul>
-        </div>
-    </div>
-</div>
+<div id="@ViewBag.Title"></div>
 
-<div class="modal fade" id="<#= ModelType.Name #>AddEditModal">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-                <h4 class="modal-title">Modal title</h4>
-            </div>
-            <div class="modal-body">
-                <form class="form-horizontal">
-                    <input type="hidden" class="form-control" id="input<#= ModelType.Name #>Id">
-                    <fieldset>
-                        <div class="form-group">
-                            <label for="inputName" class="col-lg-2 control-label">Name</label>
-                            <div class="col-lg-10">
-                                <input type="text" class="form-control" id="inputName" placeholder="<#= ModelType.Name #> Name">
-                            </div>
-                        </div>
-                    </fieldset>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <a class="btn btn-default" data-dismiss="modal">Close</a>
-                <button type="button" class="btn btn-primary" onclick="Save<#= ModelType.Name #>_Click()">Save changes</button>
-            </div>
-        </div><!-- /.modal-content -->
-    </div><!-- /.modal-dialog -->
-</div><!-- /.modal -->
 @section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
     <script src="~/Scripts/moment.min.js"></script>
-    <script src="~/Scripts/bootstrap-select.min.js"></script>
-    <script src="~/Scripts/bootstrap-datetimepicker.min.js"></script>
+    <script src="~/Scripts/bsComp/bootstrap-select.min.js"></script>
+    <script src="~/Scripts/bsComp/bootstrap-datetimepicker.min.js"></script>
+    <script src="~/Scripts/bsComp/bootstrapGrid.js"></script>
     <script>
-    var dataGrid;
-    var pageGrid;
-    var rowLen;
-    var fields = [
-        { title: 'ID', name: '<#= ModelType.Name #>Id', datatype: 'string', key: true, display: false },
-        { title: 'Name', name: '<#= ModelType.Name #>Name', datatype: 'string' }
-    ];
-    var pageSizeOption = [5, 10, 15, 25, 50];
+        $(document).ready(function () {
+            $('#@ViewBag.Title').grid({
+                pageSizeOption: [5, 10, 15, 25, 50],
+                fields: [
+<#
+	IEnumerable<PropertyMetadata> properties = MetadataModel.Properties;
+	bool isFirst = true;
+	foreach (PropertyMetadata property in properties) {
+		if(property.AssociationDirection != Microsoft.AspNet.Scaffolding.Core.Metadata.AssociationDirection.None)
+			continue;
 
-    $(document).ready(function () {
-
-        pageGrid = 1;
-        pageSizeGrid();
-
-        $('#<#= ModelType.Name #>Table_PageSize').selectpicker({
-            style: 'btn-default',
-            width: '60px'
-        });
-
-        $('#inputType').selectpicker({
-            style: 'btn-default',
-            width: '160px'
-        });
-
-        headerGrid();
-
-        $.post("/<#= ModelType.Name #>/Get<#= ModelType.Name #>List", { "__RequestVerificationToken": $('input[name=__RequestVerificationToken]').val() }, function (result) {
-            if (result.total > 0) {
-                dataGrid = result.payload;
-                refreshGrid();
-            }
-            else if (result.errors != null && result.errors.length > 0) {
-                alert(result.errors);
-            }
-            else if (result.total == 0) {
-                $("#<#= ModelType.Name #>Table_Content").empty();
-                var htmlContent = '<tr>';
-                htmlContent += '<td colspan="' + fields.length + '">No data exists</td>';
-                htmlContent += '</tr>';
-                $("#<#= ModelType.Name #>Table_Content").append(htmlContent);
-            }
-            else {
-                alert("Generic error");
-            }
-        }).fail(function (jqXHR, textStatus, errorThrown) {
-            alert("Got some error: " + errorThrown);
-        });
-    });
-
-    function filterData(arg) {
-        var dataToDisplay = [];
-        for (var i = 0; i < dataGrid.length; i++) {
-            var j = 0;
-            var strSearch = '';
-            for (; j < fields.length; j++) {
-                if (fields[j]['display'] != false) {
-                    if (fields[j]['datatype'] == 'date') {
-                        strSearch += moment(dataGrid[i][fields[j]['name']]).format(fields[j]['format']);
-                    }
-                    else {
-                        strSearch += dataGrid[i][fields[j]['name']];
-                    }
-                }
-            }
-
-            if (strSearch.toLowerCase().indexOf(arg.toLowerCase()) >= 0)
-                dataToDisplay.push(dataGrid[i]);
+        if(isFirst) {
+			isFirst = false;
+#>					{ title: '<#= property.PropertyName #>', name: '<#= property.PropertyName #>', datatype: '<#= getType(property.ShortTypeName) #>', <# if(property.IsPrimaryKey)#>key: true, display: false <#;#>}
+<#
         }
-
-        return dataToDisplay;
-    }
-
-    function pageSizeGrid() {
-        $('#<#= ModelType.Name #>Table_PageSize').empty();
-        for (var i = 0; i < pageSizeOption.length; i++) {
-            if (i == 0)
-                rowLen = pageSizeOption[i];
-            $('#<#= ModelType.Name #>Table_PageSize').append('<option>' + pageSizeOption[i] + '</option>');
+		else{
+#>					,{ title: '<#= property.PropertyName #>', name: '<#= property.PropertyName #>', datatype: '<#= getType(property.ShortTypeName) #>', <# if(property.ShortTypeName == "DateTime")#>format: 'DD MMM YYYY HH:mm:ss',<#;#><# if(property.IsPrimaryKey)#>key: true,<#;#> display: true }
+<#
         }
-    }
-
-    function headerGrid() {
-        $('#<#= ModelType.Name #>Table_Header').empty();
-        var strHtml = '<tr>';
-        for (var i = 0; i < fields.length; i++) {
-            if (fields[i]['display'] != false)
-                strHtml += '<th>' + fields[i]['title'] + '</th>';
-        }
-        strHtml += '<th></th>';
-        strHtml += '</tr>';
-        $('#<#= ModelType.Name #>Table_Header').append(strHtml);
-    }
-
-    function refreshGrid() {
-        var dataToDisplay;
-        var datalen = (pageGrid * rowLen);
-        var i = (pageGrid * rowLen) - rowLen;
-
-        var strFilter = $('#<#= ModelType.Name #>Table_Search').val();
-
-        if (strFilter.length > 0)
-            dataToDisplay = filterData(strFilter);
-        else
-            dataToDisplay = dataGrid;
-
-        if (datalen > dataToDisplay.length)
-            datalen = dataToDisplay.length;
-
-        if (i > datalen) {
-            i = 0;
-            datalen = rowLen;
-
-            if (datalen > dataToDisplay.length)
-                datalen = dataToDisplay.length;
-        }
-
-        $("#<#= ModelType.Name #>Table_Content").empty();
-
-        for (; i < datalen; i++) {
-            var htmlContent = '<tr>';
-
-            var j = 0;
-            var keyID = '';
-            for (; j < fields.length; j++) {
-                if (fields[j]['display'] != false) {
-                    if (fields[j]['datatype'] == 'date') {
-                        htmlContent += '<td>' + moment(dataToDisplay[i][fields[j]['name']]).format(fields[j]['format']) + '</td>';
-                    }
-                    else {
-                        htmlContent += '<td>' + dataToDisplay[i][fields[j]['name']] + '</td>';
-                    }
-                }
-
-                if (fields[j]['key'] == true) {
-                    keyID += dataToDisplay[i][fields[j]['name']];
-                }
-            }
-
-            htmlContent += '<td><button type="button" class="btn btn-default btn-xs" onclick="<#= ModelType.Name #>Table_Edit_Click(\'' + keyID + '\')">Edit</button>&nbsp;<button type="button" class="btn btn-default btn-xs" onclick="<#= ModelType.Name #>Table_Delete_Click(\'' + keyID + '\')">Delete</button></td>';
-            htmlContent += '</tr>';
-            $("#<#= ModelType.Name #>Table_Content").append(htmlContent);
-        }
-
-        gridPageBar_init(dataToDisplay);
-    }
-
-    function gridPageBar_init(data) {
-        var totData = data.length;
-        var pageres = totData % rowLen;
-        var page = (totData - pageres) / rowLen;
-        if (pageres > 0)
-            page++;
-
-        $("#gridPageBar").empty();
-        var htmlContent = '';
-        if (pageGrid == 1) {
-            htmlContent += '<li class="disabled"><a href="#"><span class="glyphicon glyphicon-fast-backward"></span></a></li>';
-            htmlContent += '<li class="disabled"><a href="#"><span class="glyphicon glyphicon-backward"></span></a></li>';
-        }
-        else {
-            htmlContent += '<li><a href="javascript:gridPageBar_Change(1)"><span class="glyphicon glyphicon-fast-backward"></span></a></li>';
-            htmlContent += '<li><a href="javascript:gridPageBar_Change(' + (pageGrid - 1) + ')"><span class="glyphicon glyphicon-backward"></span></a></li>';
-        }
-
-        htmlContent += '<li><a href="#">Page ' + pageGrid + ' of ' + page + '</a></li>';
-
-        if (pageGrid == page) {
-            htmlContent += '<li class="disabled"><a href="#"><span class="glyphicon glyphicon-forward"></span></a></li>';
-            htmlContent += '<li class="disabled"><a href="#"><span class="glyphicon glyphicon-fast-forward"></span></a></li>';
-        }
-        else {
-            htmlContent += '<li><a href="javascript:gridPageBar_Change(' + (pageGrid + 1) + ')"><span class="glyphicon glyphicon-forward"></span></a></li>';
-            htmlContent += '<li><a href="javascript:gridPageBar_Change(' + page + ')"><span class="glyphicon glyphicon-fast-forward"></span></a></li>';
-        }
-
-        $("#gridPageBar").append(htmlContent);
-    }
-
-    function gridPageBar_Change(pageNo) {
-        pageGrid = pageNo;
-        refreshGrid();
-    }
-
-    function <#= ModelType.Name #>Table_Search_Change() {
-        var strFilter = $('#<#= ModelType.Name #>Table_Search').val();
-        if (strFilter.length >= 3) {
-            pageGrid = 1;
-            refreshGrid();
-        }
-        else if (strFilter.length == 0) {
-            pageGrid = 1;
-            refreshGrid();
-        }
-    }
-
-    function <#= ModelType.Name #>Table_PageSize_Change() {
-        if (typeof dataGrid != "undefined") {
-            rowLen = $('#<#= ModelType.Name #>Table_PageSize').val();
-            pageGrid = 1;
-            refreshGrid();
-        }
-    }
-
-    function <#= ModelType.Name #>Table_Add_Click() {
-        $('form.form-horizontal', '#<#= ModelType.Name #>AddEditModal')[0].reset();
-        $('h4.modal-title', '#<#= ModelType.Name #>AddEditModal').text("Add @ViewBag.Title");
-            $('#<#= ModelType.Name #>AddEditModal').modal();
-            $('#input<#= ModelType.Name #>Id').val("0");
-        }
-
-        function <#= ModelType.Name #>Table_Edit_Click(Id) {
-            $('form', '#<#= ModelType.Name #>AddEditModal')[0].reset();
-            $('h4.modal-title', '#<#= ModelType.Name #>AddEditModal').text("Edit @ViewBag.Title " + Id);
-            $('#<#= ModelType.Name #>AddEditModal').modal();
-            $('#input<#= ModelType.Name #>Id').val(Id);
-
-            var data = getObjects(dataGrid, "<#= ModelType.Name #>Id", Id);
-
-            if (data.length > 0) {
-                $('#inputName').val(data[0].<#= ModelType.Name #>Name);
-            }
-            else {
-                alert("Error retrieving data");
-            }
-        }
-
-        function <#= ModelType.Name #>Table_Delete_Click(Id) {
-            if (confirm("Are you sure you want to delete this record?")) {
-                $.post("/<#= ModelType.Name #>/Delete<#= ModelType.Name #>", { "__RequestVerificationToken": $('input[name=__RequestVerificationToken]').val(), ID: Id }, function (result) {
-                    if (result.total >= 0) {
-                        alert("Record deleted");
-                        var i = 0;
-                        for (; i < dataGrid.length; i++) {
-                            if (dataGrid[i].<#= ModelType.Name #>Id == result.payload) {
-                                dataGrid.splice(i, 1);
-                                break;
-                            }
-                        }
-
-                        refreshGrid();
-                    }
-                    else if (result.errors.length > 0) {
-                        alert(result.errors);
-                    }
-                    else {
-                        alert("Generic error");
-                    }
-                }).fail(function (jqXHR, textStatus, errorThrown) {
-                    alert("Got some error: " + errorThrown);
-                });
-            }
-        }
-
-        function Save<#= ModelType.Name #>_Click() {
-            var <#= ModelType.Name #>Data = {
-                <#= ModelType.Name #>Id: $('#input<#= ModelType.Name #>Id').val(),
-                <#= ModelType.Name #>Name: $('#inputName').val()
-            };
-
-            $.post("/<#= ModelType.Name #>/Set<#= ModelType.Name #>", { "__RequestVerificationToken": $('input[name=__RequestVerificationToken]').val(), data<#= ModelType.Name #>: <#= ModelType.Name #>Data }, function (result) {
-                if (result.total > 0) {
-                    alert("Successfully saving data");
-
-                    var i = 0;
-                    if (typeof dataGrid != "undefined") {
-
-                        for (; i < dataGrid.length; i++) {
-                            if (dataGrid[i].<#= ModelType.Name #>Id == result.payload.<#= ModelType.Name #>Id) {
-                                dataGrid[i].<#= ModelType.Name #>Name = result.payload.<#= ModelType.Name #>Name;
-                                break;
-                            }
-                        }
-
-                        if (i == dataGrid.length) {
-                            dataGrid.push(result.payload);
-                        }
-                    }
-                    else {
-                        dataGrid = new  Array(result.payload);
-                    }
-
-                    $('#<#= ModelType.Name #>AddEditModal').modal('hide');
-                    refreshGrid();
-                }
-                else if (result.errors.length > 0) {
-                    alert(result.errors);
-                }
-                else {
-                    alert("Generic error");
-                }
-            }).fail(function (jqXHR, textStatus, errorThrown) {
-                alert("Got some error: " + errorThrown);
+	}
+#>
+                ],
+                gridAddUpdateData: "/<#= ModelType.Name #>/AddUpdate<#= ModelType.Name #>",
+                gridGetData: "/<#= ModelType.Name #>/Get<#= ModelType.Name #>List",
+                gridDeleteData: "/<#= ModelType.Name #>/Delete<#= ModelType.Name #>"
             });
-        }
-
-        function getObjects(obj, key, val) {
-            var objects = [];
-            for (var i in obj) {
-                if (!obj.hasOwnProperty(i)) continue;
-                if (typeof obj[i] == 'object') {
-                    objects = objects.concat(getObjects(obj[i], key, val));
-                } else if (i == key && obj[key] == val) {
-                    objects.push(obj);
-                }
-            }
-            return objects;
-        }
+        })
     </script>
 }
+
+<#+
+	string getType(string efType){
+		switch(efType){
+			case "DateTime":
+				return "date";
+			case "int":
+				return "int";
+			default:
+				return "string";
+		}
+    }
+ #>
