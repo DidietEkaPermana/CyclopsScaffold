@@ -115,9 +115,9 @@ namespace <#= Namespace #>
         }
 	}
 #>
-								});
+								}).ToList();
 
-				data.total = ((List<<#= ModelType.Name #>>)data.payload).Count();
+				data.total = ((List<<#= ModelType.Name #>>)data.payload).Count;
             }
             catch (Exception ex)
             {
@@ -136,11 +136,31 @@ namespace <#= Namespace #>
             {
 				int iPageStart = (int)((iPage - 1) * iLength);
 
-				var <#= EntitySetVariable #> = db.<#= entitySetName #>.Skip(iPageStart).Take((int)iLength);
+				var <#= EntitySetVariable #> = db.<#= entitySetName #>.OrderBy(p => p.<#= getPrimaryKey() #>).Skip(iPageStart).Take((int)iLength);
 
-				data.payload = await <#= EntitySetVariable #>.ToListAsync();
+				data.payload = (await <#= EntitySetVariable #>.ToListAsync())
+								.Select(p => new <#= ModelType.Name #> {
+<#
+	isFirst = true;
+	foreach (PropertyMetadata property in properties) {
 
-				data.total = ((List<<#= ModelType.Name #>>)data.payload).Count();
+		if(property.AssociationDirection != Microsoft.AspNet.Scaffolding.Core.Metadata.AssociationDirection.None)
+			continue;
+
+        if(isFirst) {
+			isFirst = false;
+#>									<#= property.PropertyName #> = p.<#= property.PropertyName #>
+<#
+        }
+		else{
+#>									,<#= property.PropertyName #> = p.<#= property.PropertyName #>
+<#
+        }
+	}
+#>
+								}).ToList();
+
+				data.total = (await db.<#= entitySetName #>.CountAsync());
             }
             catch (Exception ex)
             {
@@ -206,3 +226,9 @@ namespace <#= Namespace #>
         }
     }
 }
+
+<#+ 
+	string getPrimaryKey(){
+		return MetadataModel.Properties.Where(p => p.IsPrimaryKey == true).FirstOrDefault().PropertyName;
+	}
+ #>
