@@ -31,7 +31,8 @@ namespace CyclopsScaffold.UI
 
                 return codeTypeService
                     .GetAllCodeTypes(Context.ActiveProject)
-                    .Where(codeType => codeType.IsValidWebProjectEntityType())
+                    //.Where(codeType => codeType.IsValidWebProjectEntityType())
+                    .Where(p => p.IsValidDbContextType())
                     .Select(codeType => new ModelType(codeType));
             }
         }

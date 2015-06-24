@@ -62,8 +62,10 @@
 	}
 #>
                 ],
+				serverAction: true, 
                 gridAddUpdateData: "/<#= ModelType.Name #>/AddUpdate<#= ModelType.Name #>",
-                gridGetData: "/<#= ModelType.Name #>/Get<#= ModelType.Name #>List",
+                //gridGetData: "/<#= ModelType.Name #>/Get<#= ModelType.Name #>List",
+				gridGetData: "/<#= ModelType.Name #>/Read<#= ModelType.Name #>",
                 gridDeleteData: "/<#= ModelType.Name #>/Delete<#= ModelType.Name #>"
             });
         })

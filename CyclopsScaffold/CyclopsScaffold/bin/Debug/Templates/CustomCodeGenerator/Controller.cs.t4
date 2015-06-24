@@ -52,7 +52,10 @@ namespace <#= Namespace #>
 
             try
             {
-                
+				if(<#= dataParameter #>.<#= primaryKeyName #> == 0)
+					return await Create<#= ModelType.Name #>(<#= dataParameter #>);
+				else
+					return await Update<#= ModelType.Name #>(<#= dataParameter #>);
             }
             catch (Exception ex)
             {
@@ -62,8 +65,7 @@ namespace <#= Namespace #>
 			return Json(data);
         }
 
-		[ValidateAntiForgeryToken]
-		public async Task<JsonResult> Create<#= ModelType.Name #>(<#= ModelType.Name #> <#= dataParameter #>)
+		private async Task<JsonResult> Create<#= ModelType.Name #>(<#= ModelType.Name #> <#= dataParameter #>)
         {
 			JsonData data = new JsonData();
 
@@ -170,8 +172,7 @@ namespace <#= Namespace #>
             return Json(data);
 		}
 
-		[ValidateAntiForgeryToken]
-		public async Task<JsonResult> Update<#= ModelType.Name #>(<#= ModelType.Name #> <#= dataParameter #>)
+		private async Task<JsonResult> Update<#= ModelType.Name #>(<#= ModelType.Name #> <#= dataParameter #>)
         {
             JsonData data = new JsonData();
 

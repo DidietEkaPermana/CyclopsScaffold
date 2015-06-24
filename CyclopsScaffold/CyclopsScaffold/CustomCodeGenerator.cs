@@ -48,7 +48,20 @@ namespace CyclopsScaffold
         {
             var project = Context.ActiveProject;
 
-            var codeType = _viewModel.SelectedModelType.CodeType;
+            //var codeType = _viewModel.SelectedModelType.CodeType;
+
+            //ICodeTypeService codeTypeService = (ICodeTypeService)Context
+            //        .ServiceProvider.GetService(typeof(ICodeTypeService));
+
+
+            //var modelTypes = codeTypeService
+            //                            .GetAllCodeTypes(project)
+            //                            .Where(p => p.IsValidDbContextType())
+            //                            .Select(p => new ModelType(p));
+
+            //var dbContextClass = modelTypes.Where(p => p.CodeType.Namespace.FullName == codeType.Namespace.FullName).FirstOrDefault();
+
+            var dbContextClass = _viewModel.SelectedModelType;
 
             ICodeTypeService codeTypeService = (ICodeTypeService)Context
                     .ServiceProvider.GetService(typeof(ICodeTypeService));
@@ -56,23 +69,27 @@ namespace CyclopsScaffold
 
             var modelTypes = codeTypeService
                                         .GetAllCodeTypes(project)
-                                        .Where(p => p.IsValidDbContextType())
+                                        .Where(p => p.IsValidWebProjectEntityType() && p.Namespace.FullName == dbContextClass.CodeType.Namespace.FullName)
                                         .Select(p => new ModelType(p));
 
-            var dbContextClass = modelTypes.Where(p => p.CodeType.Namespace.FullName == codeType.Namespace.FullName).FirstOrDefault();
-
-            // Get the Entity Framework Meta Data
-            IEntityFrameworkService efService = (IEntityFrameworkService)Context.ServiceProvider.GetService(typeof(IEntityFrameworkService));
-            ModelMetadata efMetadata = efService.AddRequiredEntity(Context, dbContextClass.TypeName, codeType.FullName);
-
-            var selectionRelativePath = "Controllers\\";
-            AddMvcControllers(project, selectionRelativePath, codeType, dbContextClass, efMetadata);
-
-            selectionRelativePath = "Models\\";
+            var selectionRelativePath = "Models\\";
             AddMvcModels(project, selectionRelativePath);
 
-            selectionRelativePath = "Views\\";
-            AddMvcViews(project, selectionRelativePath, efMetadata);
+            foreach (var codeType in modelTypes.Select(p => p.CodeType))
+            {
+                // Get the Entity Framework Meta Data
+                IEntityFrameworkService efService = (IEntityFrameworkService)Context.ServiceProvider.GetService(typeof(IEntityFrameworkService));
+                ModelMetadata efMetadata = efService.AddRequiredEntity(Context, dbContextClass.TypeName, codeType.FullName);
+
+                if (efMetadata.PrimaryKeys.Count() > 1)
+                    continue;
+
+                selectionRelativePath = "Controllers\\";
+                AddMvcControllers(project, selectionRelativePath, codeType, dbContextClass, efMetadata);
+
+                selectionRelativePath = "Views\\";
+                AddMvcViews(project, selectionRelativePath, codeType, efMetadata);
+            }
         }
 
         private void AddMvcControllers(Project project, string selectionRelativePath, CodeType codeType, ModelType dbContextClass, ModelMetadata efMetadata)
@@ -130,10 +147,9 @@ namespace CyclopsScaffold
                 skipIfExists: false);
         }
 
-        private void AddMvcViews(Project project, string selectionRelativePath, ModelMetadata efMetadata)
+        private void AddMvcViews(Project project, string selectionRelativePath, CodeType codeType, ModelMetadata efMetadata)
         {
             // Get the selected code type
-            var codeType = _viewModel.SelectedModelType.CodeType;
             var defaultNamespace = (project.Name + ".Views");
 
             string outputFolderPath = Path.Combine(selectionRelativePath, codeType.Name + "\\Index");
