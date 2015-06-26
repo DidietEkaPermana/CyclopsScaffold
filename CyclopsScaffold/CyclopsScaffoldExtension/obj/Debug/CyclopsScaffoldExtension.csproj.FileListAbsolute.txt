@@ -22,3 +22,4 @@ C:\Didiet\MyGIT\CyclopsScaffold\CyclopsScaffold\CyclopsScaffoldExtension\obj\Deb
 C:\Didiet\MyGIT\CyclopsScaffold\CyclopsScaffold\CyclopsScaffoldExtension\obj\Debug\CyclopsScaffoldExtension.dll
 C:\Didiet\MyGIT\CyclopsScaffold\CyclopsScaffold\CyclopsScaffoldExtension\obj\Debug\CyclopsScaffoldExtension.pdb
 C:\Didiet\MyGIT\CyclopsScaffold\CyclopsScaffold\CyclopsScaffoldExtension\obj\Debug\extension.vsixmanifest
+C:\Didiet\MyGIT\CyclopsScaffold\CyclopsScaffold\CyclopsScaffoldExtension\bin\Debug\Templates\CustomCodeGenerator\BLL.cs.t4

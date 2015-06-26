@@ -26,3 +26,4 @@ C:\Didiet\MyGIT\CyclopsScaffold\CyclopsScaffold\CyclopsScaffold\obj\Debug\Cyclop
 C:\Didiet\MyGIT\CyclopsScaffold\CyclopsScaffold\CyclopsScaffold\obj\Debug\CyclopsScaffold.csproj.GenerateResource.Cache
 C:\Didiet\MyGIT\CyclopsScaffold\CyclopsScaffold\CyclopsScaffold\obj\Debug\CyclopsScaffold.dll
 C:\Didiet\MyGIT\CyclopsScaffold\CyclopsScaffold\CyclopsScaffold\obj\Debug\CyclopsScaffold.pdb
+C:\Didiet\MyGIT\CyclopsScaffold\CyclopsScaffold\CyclopsScaffold\bin\Debug\Templates\CustomCodeGenerator\BLL.cs.t4

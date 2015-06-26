@@ -66,6 +66,9 @@
     <Compile Include="Utils\ProjectItemUtils.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Templates\CustomCodeGenerator\BLL.cs.t4">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="Templates\CustomCodeGenerator\Controller.cs.t4">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <Parameters>&lt;%3fxml version="1.0" encoding="utf-16"%3f&gt;

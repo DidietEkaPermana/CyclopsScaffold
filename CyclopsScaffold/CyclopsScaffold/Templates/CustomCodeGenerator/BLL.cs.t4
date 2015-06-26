@@ -1,0 +1,192 @@
+﻿<#@ template language="C#" HostSpecific="True" Debug="True" #>
+<#@ assembly name="System.Core" #>
+<#@ assembly name="EnvDTE" #>
+<#@ ScaffoldingAssembly Processor="ScaffoldingAssemblyLoader" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="Microsoft.AspNet.Scaffolding.Core.Metadata" #>
+<#@ parameter name="ModelType" type="EnvDTE.CodeType" #>
+<#@ parameter type="System.String" name="Namespace" #>
+<#@ parameter type="System.String" name="dbContext" #>
+<#@ parameter type="System.Collections.Generic.HashSet<System.String>" name="RequiredNamespaces" #>
+<#@ parameter type="Microsoft.AspNet.Scaffolding.Core.Metadata.ModelMetadata" name="MetadataModel" #>
+<#@ parameter type="System.String" name="EntitySetVariable" #>
+using System;
+using System.Collections.Generic;
+using System.Data.Entity;
+using System.Data.Entity.Infrastructure;
+using System.Linq;
+using System.Threading.Tasks;
+<# foreach (var namespaceName in RequiredNamespaces) { #>
+using <#= namespaceName #>;
+<# } #>
+
+namespace <#= Namespace #>
+{
+
+<# 
+	var entitySetName = MetadataModel.EntitySetName;
+	var dataParameter = ModelType.Name + "Data";
+	var primaryKeyName = MetadataModel.PrimaryKeys[0].PropertyName;
+    var primaryKeyShortTypeName = MetadataModel.PrimaryKeys[0].ShortTypeName;
+    var primaryKeyDefaultValue = MetadataModel.PrimaryKeys[0].DefaultValue;
+    var primaryKeyType = MetadataModel.PrimaryKeys[0].TypeName;
+#>
+    public class <#= ModelType.Name #>Service
+    {
+		private <#= dbContext #> _container;
+        private <#= dbContext #> Container
+        {
+            get
+            {
+                if (_container == null) _container = new <#= dbContext #>();
+                return _container;
+            }
+            set
+            {
+                _container = value;
+            }
+        }
+
+        public <#= ModelType.Name #>Service(<#= dbContext #> context) { _container = context; }
+
+        public <#= ModelType.Name #>Service() { }
+		
+		public async Task<<#= ModelType.Name #>> Create<#= ModelType.Name #>(<#= ModelType.Name #> <#= dataParameter #>)
+        {
+			try
+            {
+                Container.<#= entitySetName #>.Add(<#= dataParameter #>);
+
+                await Container.SaveChangesAsync();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
+			return <#= dataParameter #>;;
+        }
+
+		public async Task<List<<#= ModelType.Name #>>> Get<#= ModelType.Name #>List()
+		{
+			try
+            {
+				var <#= EntitySetVariable #> = Container.<#= entitySetName #>;
+
+				return (await <#= EntitySetVariable #>.ToListAsync())
+								.Select(p => new <#= ModelType.Name #> {
+<#
+	IEnumerable<PropertyMetadata> properties = MetadataModel.Properties;
+	bool isFirst = true;
+	foreach (PropertyMetadata property in properties) {
+
+		if(property.AssociationDirection != Microsoft.AspNet.Scaffolding.Core.Metadata.AssociationDirection.None)
+			continue;
+
+        if(isFirst) {
+			isFirst = false;
+#>									<#= property.PropertyName #> = p.<#= property.PropertyName #>
+<#
+        }
+		else{
+#>									,<#= property.PropertyName #> = p.<#= property.PropertyName #>
+<#
+        }
+	}
+#>
+								}).ToList();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+		}
+
+		public async Task<List<<#= ModelType.Name #>>> Read<#= ModelType.Name #>(int iPage, int iLength, string strSearch)
+		{
+			try
+            {
+				int iPageStart = (int)((iPage - 1) * iLength);
+
+				var <#= EntitySetVariable #> = Container.<#= entitySetName #>.OrderBy(p => p.<#= getPrimaryKey() #>).Skip(iPageStart).Take((int)iLength);
+
+				return (await <#= EntitySetVariable #>.ToListAsync())
+								.Select(p => new <#= ModelType.Name #> {
+<#
+	isFirst = true;
+	foreach (PropertyMetadata property in properties) {
+
+		if(property.AssociationDirection != Microsoft.AspNet.Scaffolding.Core.Metadata.AssociationDirection.None)
+			continue;
+
+        if(isFirst) {
+			isFirst = false;
+#>									<#= property.PropertyName #> = p.<#= property.PropertyName #>
+<#
+        }
+		else{
+#>									,<#= property.PropertyName #> = p.<#= property.PropertyName #>
+<#
+        }
+	}
+#>
+								}).ToList();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+		}
+
+		public async Task<int> GetTotalCount()
+		{
+			try
+            {
+				return (await Container.<#= entitySetName #>.CountAsync());
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+		}
+
+		public async Task<<#= ModelType.Name #>> Update<#= ModelType.Name #>(<#= ModelType.Name #> <#= dataParameter #>)
+        {
+            try
+            {
+                Container.Entry(<#= dataParameter #>).State = EntityState.Modified;
+                await Container.SaveChangesAsync();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+
+            return <#= dataParameter #>;
+        }
+
+		public async Task<<#= ModelType.Name #>> Delete<#= ModelType.Name #>(<#= primaryKeyShortTypeName #> id)
+        {
+            try
+            {
+                <#= ModelType.Name #> <#= dataParameter #> = await Container.<#= entitySetName #>.FindAsync(id);
+                Container.<#= entitySetName #>.Remove(<#= dataParameter #>);
+                await Container.SaveChangesAsync();
+
+				return <#= dataParameter #>;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+    }
+}
+
+<#+ 
+	string getPrimaryKey(){
+		return MetadataModel.Properties.Where(p => p.IsPrimaryKey == true).FirstOrDefault().PropertyName;
+	}
+ #>

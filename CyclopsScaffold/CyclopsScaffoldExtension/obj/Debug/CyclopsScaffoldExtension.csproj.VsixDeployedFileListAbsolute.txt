@@ -12,3 +12,4 @@ C:\Users\didiet.permana\AppData\Local\Microsoft\VisualStudio\12.0Exp\Extensions\
 C:\Users\didiet.permana\AppData\Local\Microsoft\VisualStudio\12.0Exp\Extensions\Didiet Eka Permana\Cyclops Scaffold Extension\1.0\\Templates\CustomCodeGenerator\JsonUIModels.cs.t4
 C:\Users\didiet.permana\AppData\Local\Microsoft\VisualStudio\12.0Exp\Extensions\Didiet Eka Permana\Cyclops Scaffold Extension\1.0\\Templates\CustomCodeGenerator\Views.cs.t4
 C:\Users\didiet.permana\AppData\Local\Microsoft\VisualStudio\12.0Exp\Extensions\Didiet Eka Permana\Cyclops Scaffold Extension\1.0\\Templates\CustomCodeGenerator\Models.cs.t4
+C:\Users\didiet.permana\AppData\Local\Microsoft\VisualStudio\12.0Exp\Extensions\Didiet Eka Permana\Cyclops Scaffold Extension\1.0\\Templates\CustomCodeGenerator\BLL.cs.t4

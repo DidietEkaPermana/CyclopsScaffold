@@ -46,20 +46,17 @@ namespace CyclopsScaffold
         /// </summary>
         public override void GenerateCode()
         {
-            var project = Context.ActiveProject;
+            Project projectActive = Context.ActiveProject;
+            Solution solution = projectActive.DTE.Solution;
 
-            //var codeType = _viewModel.SelectedModelType.CodeType;
-
-            //ICodeTypeService codeTypeService = (ICodeTypeService)Context
-            //        .ServiceProvider.GetService(typeof(ICodeTypeService));
-
-
-            //var modelTypes = codeTypeService
-            //                            .GetAllCodeTypes(project)
-            //                            .Where(p => p.IsValidDbContextType())
-            //                            .Select(p => new ModelType(p));
-
-            //var dbContextClass = modelTypes.Where(p => p.CodeType.Namespace.FullName == codeType.Namespace.FullName).FirstOrDefault();
+            List<Project> list = new List<Project>();
+            foreach (Project projectA in solution.Projects)
+            {
+                if (projectA.Kind == Constants.vsProjectKindSolutionItems)
+                    list.AddRange(GetSolutionFolderProjects(projectA));
+                else
+                    list.Add(projectA);
+            }
 
             var dbContextClass = _viewModel.SelectedModelType;
 
@@ -68,12 +65,19 @@ namespace CyclopsScaffold
 
 
             var modelTypes = codeTypeService
-                                        .GetAllCodeTypes(project)
+                                        .GetAllCodeTypes(projectActive)
                                         .Where(p => p.IsValidWebProjectEntityType() && p.Namespace.FullName == dbContextClass.CodeType.Namespace.FullName)
                                         .Select(p => new ModelType(p));
 
+            //find context projects
+            Project projectContext = null;
+            foreach(Project projectA in list){
+                if (dbContextClass.CodeType.Namespace.FullName.StartsWith(projectA.Name + "."))
+                    projectContext = projectA;
+            }
+
             var selectionRelativePath = "Models\\";
-            AddMvcModels(project, selectionRelativePath);
+            AddMvcModels(projectActive, selectionRelativePath);
 
             foreach (var codeType in modelTypes.Select(p => p.CodeType))
             {
@@ -84,12 +88,49 @@ namespace CyclopsScaffold
                 if (efMetadata.PrimaryKeys.Count() > 1)
                     continue;
 
+                selectionRelativePath = "BLL\\";
+                AddBLL(projectContext, selectionRelativePath, codeType, dbContextClass, efMetadata);
+
                 selectionRelativePath = "Controllers\\";
-                AddMvcControllers(project, selectionRelativePath, codeType, dbContextClass, efMetadata);
+                AddMvcControllers(projectActive, selectionRelativePath, codeType, dbContextClass, efMetadata);
 
                 selectionRelativePath = "Views\\";
-                AddMvcViews(project, selectionRelativePath, codeType, efMetadata);
+                AddMvcViews(projectActive, selectionRelativePath, codeType, efMetadata);
             }
+        }
+
+        private void AddBLL(Project project, string selectionRelativePath, CodeType codeType, ModelType dbContextClass, ModelMetadata efMetadata)
+        {
+            // Get the selected code type
+            var defaultNamespace = (project.Name + ".BLL");
+
+            //get context
+            ICodeTypeService codeTypeService = (ICodeTypeService)Context
+                    .ServiceProvider.GetService(typeof(ICodeTypeService));
+
+
+            string modelTypeVariable = GetTypeVariable(codeType.Name);
+
+            string BLLName = codeType.Name + "Service";
+            string outputFolderPath = Path.Combine(selectionRelativePath, BLLName);
+
+            // Setup the scaffolding item creation parameters to be passed into the T4 template.
+            var parameters = new Dictionary<string, object>()
+            {
+                {"ModelType", codeType},
+                {"Namespace", defaultNamespace},
+                {"dbContext", dbContextClass.ShortTypeName},
+                {"MetadataModel", efMetadata},
+                {"EntitySetVariable", modelTypeVariable},
+                {"RequiredNamespaces", new HashSet<string>(){codeType.Namespace.FullName, (project.Name + ".Models")}}
+            };
+
+            // Add the custom scaffolding item from T4 template.
+            this.AddFileFromTemplate(project,
+                outputFolderPath,
+                "BLL",
+                parameters,
+                skipIfExists: false);
         }
 
         private void AddMvcControllers(Project project, string selectionRelativePath, CodeType codeType, ModelType dbContextClass, ModelMetadata efMetadata)
@@ -115,7 +156,7 @@ namespace CyclopsScaffold
                 {"dbContext", dbContextClass.ShortTypeName},
                 {"MetadataModel", efMetadata},
                 {"EntitySetVariable", modelTypeVariable},
-                {"RequiredNamespaces", new HashSet<string>(){codeType.Namespace.FullName, (project.Name + ".Models")}}
+                {"RequiredNamespaces", new HashSet<string>(){codeType.Namespace.FullName, (GetParentNameSpace(codeType.Namespace.FullName) + ".BLL"), (project.Name + ".Models")}}
             };
 
             // Add the custom scaffolding item from T4 template.
@@ -171,6 +212,41 @@ namespace CyclopsScaffold
         }
 
         #region function library
+        private string GetParentNameSpace(string strNamespace)
+        {
+            string[] names = strNamespace.Split('.');
+
+            if (names != null || names.Count() > 0)
+                return names[0];
+            else
+                return strNamespace;
+        }
+        private static IEnumerable<Project> GetSolutionFolderProjects(Project solutionFolder)
+        {
+            List<Project> list = new List<Project>();
+            //for (var i = 1; i <= solutionFolder.ProjectItems.Count; i++)
+            foreach (ProjectItem item in solutionFolder.ProjectItems)
+            {
+                //var subProject = solutionFolder.ProjectItems.Item(i).SubProject;
+                var subProject = item.SubProject;
+                if (subProject == null)
+                {
+                    continue;
+                }
+
+                // If this is another solution folder, do a recursive call, otherwise add
+                if (subProject.Kind == Constants.vsProjectKindSolutionItems)
+                {
+                    list.AddRange(GetSolutionFolderProjects(subProject));
+                }
+                else
+                {
+                    list.Add(subProject);
+                }
+            }
+            return list;
+        }
+
         private string GetTypeVariable(string typeName)
         {
             return typeName.Substring(0, 1).ToLower() + typeName.Substring(1, typeName.Length - 1);

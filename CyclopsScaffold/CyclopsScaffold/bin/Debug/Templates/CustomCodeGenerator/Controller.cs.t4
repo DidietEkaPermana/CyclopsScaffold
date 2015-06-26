@@ -36,8 +36,6 @@ namespace <#= Namespace #>
 #>
     public class <#= ModelType.Name #>Controller : Controller
     {
-		private <#= dbContext #> db = new <#= dbContext #>();
-		
 		// GET: News
         public ActionResult Index()
         {
@@ -71,11 +69,7 @@ namespace <#= Namespace #>
 
             try
             {
-                db.<#= entitySetName #>.Add(<#= dataParameter #>);
-
-                await db.SaveChangesAsync();
-
-                data.payload = <#= dataParameter #>;
+                data.payload = await (new <#= ModelType.Name #>Service()).Create<#= ModelType.Name #>(<#= dataParameter #>);
 
 				data.total = 1;
             }
@@ -94,30 +88,7 @@ namespace <#= Namespace #>
 
             try
             {
-				var <#= EntitySetVariable #> = db.<#= entitySetName #>;
-
-				data.payload = (await <#= EntitySetVariable #>.ToListAsync())
-								.Select(p => new <#= ModelType.Name #> {
-<#
-	IEnumerable<PropertyMetadata> properties = MetadataModel.Properties;
-	bool isFirst = true;
-	foreach (PropertyMetadata property in properties) {
-
-		if(property.AssociationDirection != Microsoft.AspNet.Scaffolding.Core.Metadata.AssociationDirection.None)
-			continue;
-
-        if(isFirst) {
-			isFirst = false;
-#>									<#= property.PropertyName #> = p.<#= property.PropertyName #>
-<#
-        }
-		else{
-#>									,<#= property.PropertyName #> = p.<#= property.PropertyName #>
-<#
-        }
-	}
-#>
-								}).ToList();
+				data.payload = await (new <#= ModelType.Name #>Service()).Get<#= ModelType.Name #>List();
 
 				data.total = ((List<<#= ModelType.Name #>>)data.payload).Count;
             }
@@ -136,33 +107,9 @@ namespace <#= Namespace #>
 
             try
             {
-				int iPageStart = (int)((iPage - 1) * iLength);
+				data.payload = await (new <#= ModelType.Name #>Service()).Read<#= ModelType.Name #>(iPage, iLength, strSearch);
 
-				var <#= EntitySetVariable #> = db.<#= entitySetName #>.OrderBy(p => p.<#= getPrimaryKey() #>).Skip(iPageStart).Take((int)iLength);
-
-				data.payload = (await <#= EntitySetVariable #>.ToListAsync())
-								.Select(p => new <#= ModelType.Name #> {
-<#
-	isFirst = true;
-	foreach (PropertyMetadata property in properties) {
-
-		if(property.AssociationDirection != Microsoft.AspNet.Scaffolding.Core.Metadata.AssociationDirection.None)
-			continue;
-
-        if(isFirst) {
-			isFirst = false;
-#>									<#= property.PropertyName #> = p.<#= property.PropertyName #>
-<#
-        }
-		else{
-#>									,<#= property.PropertyName #> = p.<#= property.PropertyName #>
-<#
-        }
-	}
-#>
-								}).ToList();
-
-				data.total = (await db.<#= entitySetName #>.CountAsync());
+				data.total = await (new <#= ModelType.Name #>Service()).GetTotalCount();
             }
             catch (Exception ex)
             {
@@ -178,10 +125,7 @@ namespace <#= Namespace #>
 
             try
             {
-                db.Entry(<#= dataParameter #>).State = EntityState.Modified;
-                await db.SaveChangesAsync();
-
-                data.payload = <#= dataParameter #>;
+                data.payload = await (new <#= ModelType.Name #>Service()).Update<#= ModelType.Name #>(<#= dataParameter #>);
 
 				data.total = 1;
             }
@@ -200,11 +144,7 @@ namespace <#= Namespace #>
 
             try
             {
-                <#= ModelType.Name #> <#= dataParameter #> = await db.<#= entitySetName #>.FindAsync(id);
-                db.<#= entitySetName #>.Remove(<#= dataParameter #>);
-                await db.SaveChangesAsync();
-
-                data.payload = <#= dataParameter #>;
+                data.payload = await (new <#= ModelType.Name #>Service()).Delete<#= ModelType.Name #>(id);
 
 				data.total = 1;
             }
@@ -216,15 +156,6 @@ namespace <#= Namespace #>
             return Json(data);
         }
 		#endregion API request
-
-		protected override void Dispose(bool disposing)
-        {
-            if (disposing)
-            {
-                db.Dispose();
-            }
-            base.Dispose(disposing);
-        }
     }
 }
 
