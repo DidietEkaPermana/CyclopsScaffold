@@ -153,9 +153,7 @@ namespace CyclopsScaffold
             {
                 {"ModelType", codeType},
                 {"Namespace", defaultNamespace},
-                {"dbContext", dbContextClass.ShortTypeName},
                 {"MetadataModel", efMetadata},
-                {"EntitySetVariable", modelTypeVariable},
                 {"RequiredNamespaces", new HashSet<string>(){codeType.Namespace.FullName, (GetParentNameSpace(codeType.Namespace.FullName) + ".BLL"), (project.Name + ".Models")}}
             };
 

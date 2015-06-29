@@ -1,5 +1,5 @@
 ﻿//! bootstrapGrid.js
-//! version : 0.0.1
+//! version : 0.0.2
 //! authors : Didiet Eka Permana
 //! license : MIT
 
@@ -18,7 +18,7 @@ if (typeof jQuery === 'undefined') {
     'use strict';
 
     var RequestVerificationToken = $('input[name=__RequestVerificationToken]').val();
-    
+
     /*
      * Construct class with option
      */
@@ -43,7 +43,7 @@ if (typeof jQuery === 'undefined') {
 
         this.formValidator;
         this.dataGrid = null;
-        this.keyFields = '';
+        this.keyFields;
 
         this.init(element);
     };
@@ -186,8 +186,15 @@ if (typeof jQuery === 'undefined') {
             }
         },
 
-        templateAddEdit: function() {
-                return ' \
+        templateAddEdit: function () {
+            this.keyFields = this.getKey();
+            var strHtml = '';
+            for (var i = 0; i < this.keyFields.length; i++) {
+                strHtml += '<input type="hidden" class="form-control" id="input' + this.keyFields[i]['name'] + '">';
+            }
+
+
+            return ' \
                     <div class="modal fade" id="' + this.gridName + 'AddEditModal"> \
                         <div class="modal-dialog"> \
                             <div class="modal-content"> \
@@ -197,8 +204,8 @@ if (typeof jQuery === 'undefined') {
                                 </div> \
                                 <div class="modal-body"> \
                                     <form class="form-horizontal"> \
-                                        <input type="hidden" class="form-control" id="Input' + this.gridName + 'Id"> \
-                                        <fieldset> ' + this.componentField()  + ' </fieldset> \
+                                        ' + strHtml + ' \
+                                        <fieldset> ' + this.componentField() + ' </fieldset> \
                                     </form> \
                                 </div> \
                                 <div class="modal-footer"> \
@@ -211,16 +218,12 @@ if (typeof jQuery === 'undefined') {
                 ';
         },
 
-        componentField: function() {
+        componentField: function () {
             var strHtml = '';
 
             var fields = this.fields;
             for (var j = 0; j < fields.length; j++) {
-                if (fields[j]['key'] == true) {
-                    this.keyFields += fields[j]['name'];
-                }
-
-                if (fields[j]['display'] != false) {
+                if (!fields[j]['key']) {
                     if (fields[j]['datatype'] == 'date') {
                         strHtml += '<div class="form-group"> \
                                     <label for="input' + fields[j]['name'] + '" class="col-lg-2 control-label">' + fields[j]['title'] + '</label> \
@@ -243,12 +246,31 @@ if (typeof jQuery === 'undefined') {
                         strHtml += '<div class="form-group"> \
                                     <label for="input' + fields[j]['name'] + '" class="col-lg-2 control-label">' + fields[j]['title'] + '</label> \
                                     <div class="col-lg-6"> \
-                                    <select id="input' + fields[j]['name']+ '">';
+                                    <select id="input' + fields[j]['name'] + '">';
                         var dataEnum = fields[j]['enumdata'];
                         for (var i in dataEnum) {
-                            strHtml += '<option value="' +i + '">' +dataEnum[i] + '</option>';
+                            strHtml += '<option value="' + i + '">' + dataEnum[i] + '</option>';
                         }
                         strHtml += '</select></div></div>';
+                    }
+                    else if (fields[j]['datatype'] == 'int') {
+                        if (fields[j]['reff'] != null) {
+                            strHtml += '<div class="form-group"> \
+                                    <label for="input' + fields[j]['name'] + '" class="col-lg-2 control-label">' + fields[j]['title'] + '</label> \
+                                    <div class="col-lg-6"><div class="input-group"> \
+                                        <input type="text" class="form-control" id="input' + fields[j]['name'] + '" placeholder="' + fields[j]['title'] + '"> \
+                                        <span class="input-group-btn"><button class="btn btn-default" type="button" data-dismiss="modal" data-toggle="modal" data-target="#' + fields[j]['reff'] + 'Dialog" id="' + fields[j]['reff'] + '_button">...</button></span> \
+                                    </div></div> \
+                                </div>';
+                        }
+                        else {
+                            strHtml += '<div class="form-group"> \
+                                    <label for="input' + fields[j]['name'] + '" class="col-lg-2 control-label">' + fields[j]['title'] + '</label> \
+                                    <div class="col-lg-6"> \
+                                        <input type="text" class="form-control" id="input' + fields[j]['name'] + '" placeholder="' + fields[j]['title'] + '"> \
+                                    </div> \
+                                </div>';
+                        }
                     }
                     else {
                         if (fields[j]['reff'] != null) {
@@ -275,7 +297,7 @@ if (typeof jQuery === 'undefined') {
             return strHtml;
         },
 
-        bindAddEditComponent: function() {
+        bindAddEditComponent: function () {
             var fields = this.fields;
             for (var j = 0; j < fields.length; j++) {
                 if (fields[j]['display'] != false) {
@@ -289,6 +311,8 @@ if (typeof jQuery === 'undefined') {
                             style: 'btn-default',
                             width: '160px'
                         });
+                    }
+                    else if (fields[j]['datatype'] == 'int') {
                     }
                     else {
                     }
@@ -306,11 +330,11 @@ if (typeof jQuery === 'undefined') {
                     iPage: this.pageGrid,
                     iLength: this.rowLen,
                     strSearch: ""
-                }
+                };
             }
             else {
-                postData = { "__RequestVerificationToken": RequestVerificationToken }
-            };
+                postData = { "__RequestVerificationToken": RequestVerificationToken };
+            }
 
             $.post(this.gridGetData, postData, function (result) {
                 if (result.total > 0) {
@@ -322,7 +346,7 @@ if (typeof jQuery === 'undefined') {
                     alert(result.errors);
                 }
                 else if (result.total == 0) {
-                    $("#"+ this.gridName +"Table_Content").empty();
+                    $("#" + this.gridName + "Table_Content").empty();
                     var htmlContent = '<tr>';
                     htmlContent += '<td colspan="' + this.fields.length + '">No data exists</td>';
                     htmlContent += '</tr>';
@@ -336,7 +360,7 @@ if (typeof jQuery === 'undefined') {
             });
         },
 
-        refreshGrid: function() {
+        refreshGrid: function () {
             var dataToDisplay;
             var datalen = (this.pageGrid * this.rowLen);
             var i = (this.pageGrid * this.rowLen) - this.rowLen;
@@ -389,9 +413,15 @@ if (typeof jQuery === 'undefined') {
                         else if (fields[j]['datatype'] == 'enum') {
                             htmlContent += '<td>' + fields[j]['enumdata'][dataToDisplay[i][fields[j]['name']]] + '</td>';
                         }
+                        else if (fields[j]['datatype'] == 'int') {
+                            if (fields[j]['reff'] != null)
+                                htmlContent += '<td>' + this.reffName(dataToDisplay[i], fields[j]['reffName']) + '</td>';
+                            else
+                                htmlContent += '<td>' + dataToDisplay[i][fields[j]['name']] + '</td>';
+                        }
                         else {
                             if (fields[j]['reff'] != null)
-                                htmlContent += '<td>' + this.reffName( dataToDisplay[i], fields[j]['reffName']) + '</td>';
+                                htmlContent += '<td>' + this.reffName(dataToDisplay[i], fields[j]['reffName']) + '</td>';
                             else
                                 htmlContent += '<td>' + dataToDisplay[i][fields[j]['name']] + '</td>';
                         }
@@ -423,7 +453,7 @@ if (typeof jQuery === 'undefined') {
             this.gridPageBar_init(dataToDisplay);
         },
 
-        pageSizeGrid: function() {
+        pageSizeGrid: function () {
             $('#' + this.gridName + 'Table_PageSize').empty();
             for (var i = 0; i < this.pageSizeOption.length; i++) {
                 if (i == 0)
@@ -432,7 +462,7 @@ if (typeof jQuery === 'undefined') {
             }
         },
 
-        headerGrid: function() {
+        headerGrid: function () {
             $('#' + this.gridName + 'Table_Header').empty();
             var strHtml = '<tr>';
             for (var i = 0; i < this.fields.length; i++) {
@@ -475,7 +505,12 @@ if (typeof jQuery === 'undefined') {
             $('form.form-horizontal', '#' + that.gridName + 'AddEditModal')[0].reset();
             $('#' + that.gridName + 'AddEditModal .modal-title').html(that.gridName + ' add');
 
-            $('#Input' + that.gridName + 'Id').val('');
+            for (var i = 0; i < that.keyFields.length; i++) {
+                if (that.keyFields[i]['datatype'] == 'int')
+                    $('#input' + that.keyFields[i]['name']).val(0);
+                else
+                    $('#input' + that.keyFields[i]['name']).val('');
+            }
 
             $('#' + that.gridName + 'AddEditModal').modal();
         },
@@ -575,14 +610,16 @@ if (typeof jQuery === 'undefined') {
             $('form.form-horizontal', '#' + that.gridName + 'AddEditModal')[0].reset();
             $('#' + that.gridName + 'AddEditModal .modal-title').html(that.gridName + ' edit ' + Id);
 
-            $('#Input' + that.gridName + 'Id').val(Id);
+            var data;
 
-            $('#' + that.gridName + 'AddEditModal').modal();
-
-            var data = that.getObjects(that.dataGrid, that.keyFields, Id);
+            for (var i = 0; i < that.keyFields.length; i++) {
+                data = that.getObjects(that.dataGrid, that.keyFields[i]['name'], Id);
+                $('#Input' + that.keyFields[i]['name']).val(Id);
+            }
 
             if (data.length > 0) {
                 that.fillAddEdit(data);
+                $('#' + that.gridName + 'AddEditModal').modal();
             }
             else {
                 alert("Error retrieving data");
@@ -592,18 +629,26 @@ if (typeof jQuery === 'undefined') {
         fillAddEdit: function (data) {
             var fields = this.fields;
             for (var j = 0; j < fields.length; j++) {
-                if (fields[j]['display'] != false) {
+                //if (fields[j]['display'] != false) {
                     if (fields[j]['datatype'] == 'date') {
                         $('#input' + fields[j]['name']).val(moment(data[0][fields[j]['name']]).format(fields[j]['format']));
                     }
                     else if (fields[j]['datatype'] == 'image') {
                         if (data[0].SourceIcon == null)
-                            $('#input' +fields[j]['name']).attr("src", this.nullImage);
+                            $('#input' + fields[j]['name']).attr("src", this.nullImage);
                         else
                             $('#input' + fields[j]['name']).attr("src", data[0][fields[j]['name']]);
                     }
                     else if (fields[j]['datatype'] == 'enum') {
                         $('#input' + fields[j]['name']).selectpicker('val', data[0][fields[j]['name']]);
+                    }
+                    else if (fields[j]['datatype'] == 'int') {
+                        if (fields[j]['reff'] != null) {
+                            $('#input' + fields[j]['name']).val(this.reffName(data[0], fields[j]['reffName']));
+                            $('#input' + fields[j]['name']).data("id", data[0][fields[j]['name']]);
+                        }
+                        else
+                            $('#input' + fields[j]['name']).val(data[0][fields[j]['name']]);
                     }
                     else {
                         if (fields[j]['reff'] != null) {
@@ -613,25 +658,17 @@ if (typeof jQuery === 'undefined') {
                         else
                             $('#input' + fields[j]['name']).val(data[0][fields[j]['name']]);
                     }
-                }
+                //}
             }
         },
 
         gridPageBar_Delete: function (arg) {
             var that = arg.data;
             if (confirm("Are you sure you want to delete this record?")) {
-                $.post(that.gridDeleteData, { "__RequestVerificationToken": $('input[name=__RequestVerificationToken]').val(), ID: $(this).data("id") }, function (result) {
+                $.post(that.gridDeleteData, { "__RequestVerificationToken": RequestVerificationToken, ID: $(this).data("id") }, function (result) {
                     if (result.total >= 0) {
                         alert("Record deleted");
-                        var i = 0;
-                        for (; i < that.dataGrid.length; i++) {
-                            if (that.dataGrid[i].SourceId == result.payload) {
-                                that.dataGrid.splice(i, 1);
-                                break;
-                            }
-                        }
-
-                        refreshGrid();
+                        that.getData();
                     }
                     else if (result.errors.length > 0) {
                         alert(result.errors);
@@ -665,26 +702,84 @@ if (typeof jQuery === 'undefined') {
         },
 
         Save_Click: function (arg) {
-            var fields = arg.data.fields;
-            for (var j = 0; j < fields.length; j++) {
-                if (fields[j]['display'] != false) {
+            var that = arg.data;
+            var fields = that.fields;
+
+            if (that.formValidator.valid()) {
+                var data = '{';
+                var isFirst = true;
+
+                isFirst = false;
+                data += '"__RequestVerificationToken" : "' + RequestVerificationToken + '"';
+
+                for (var j = 0; j < fields.length; j++) {
                     if (fields[j]['datatype'] == 'date') {
-                        console.log('#input' + fields[j]['name'] + ' ' + moment($('#input' + fields[j]['name']).val(), fields[j]['format']));
+                        if (isFirst)
+                            isFirst = false;
+                        else
+                            data += ", ";
+
+                        data += '"' + fields[j]['name'] + '": ' + moment($('#input' + fields[j]['name']).val(), fields[j]['format']);
                     }
                     else if (fields[j]['datatype'] == 'image') {
-                        console.log('#input' + fields[j]['name'] + ' ' + $('#input' + fields[j]['name']).attr("src"));
+                        if (isFirst)
+                            isFirst = false;
+                        else
+                            data += ", ";
+
+                        data += '"' + fields[j]['name'] + '": "' + $('#input' + fields[j]['name']).attr("src") + '"';
                     }
                     else if (fields[j]['datatype'] == 'enum') {
-                        console.log('#input' + fields[j]['name'] + ' ' + $('#input' + fields[j]['name']).selectpicker('val'));
+                        if (isFirst)
+                            isFirst = false;
+                        else
+                            data += ", ";
+
+                        data += '"' + fields[j]['name'] + '": "' + $('#input' + fields[j]['name']).selectpicker('val') + '"';
+                    }
+                    else if (fields[j]['datatype'] == 'int') {
+                        if (isFirst)
+                            isFirst = false;
+                        else
+                            data += ", ";
+
+                        if (fields[j]['reff'] != null)
+                            data += '"' + fields[j]['name'] + '": ' + $('#input' + fields[j]['name']).data("id");
+                        else
+                            data += '"' + fields[j]['name'] + '": ' + $('#input' + fields[j]['name']).val();
                     }
                     else {
-                        if (fields[j]['reff'] != null) {
-                            console.log('#input' + fields[j]['name'] + ' ' + $('#input' + fields[j]['name']).data("id"));
-                        }
+                        if (isFirst)
+                            isFirst = false;
                         else
-                            console.log('#input' + fields[j]['name'] + ' ' + $('#input' + fields[j]['name']).val());
+                            data += ", ";
+
+                        if (fields[j]['reff'] != null)
+                            data += '"' + fields[j]['name'] + '": "' + $('#input' + fields[j]['name']).data("id") + '"';
+                        else
+                            data += '"' + fields[j]['name'] + '": "' + $('#input' + fields[j]['name']).val() + '"';
                     }
                 }
+
+                data += "}";
+
+                console.log(data);
+                console.log(JSON.parse(data));
+
+                $.post(that.gridAddUpdateData, JSON.parse(data), function (result) {
+                    if (result.total >= 0) {
+                        that.getData();
+                        $('#' + that.gridName + 'AddEditModal').modal('hide');
+                    }
+                    else if (result.errors.length > 0) {
+                        alert(result.errors);
+                    }
+                    else {
+                        alert("Generic error");
+                    }
+                }).fail(function (jqXHR, textStatus, errorThrown) {
+                    alert("Got some error: " + errorThrown);
+                });
             }
         },
 
@@ -698,6 +793,18 @@ if (typeof jQuery === 'undefined') {
                     objects.push(obj);
                 }
             }
+            return objects;
+        },
+
+        getKey: function () {
+            var fields = this.fields;
+            var objects = [];
+            for (var j = 0; j < fields.length; j++) {
+                if (fields[j]['key']) {
+                    objects.push(fields[j]);
+                }
+            }
+
             return objects;
         }
     }
