@@ -110,9 +110,6 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\_TemplateIconSample.ico" />
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="Resources\cyclops.ico" />
     <Content Include="Templates\MvcAreaItemTemplate\MvcAreaItemTemplate.cs.vstemplate">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

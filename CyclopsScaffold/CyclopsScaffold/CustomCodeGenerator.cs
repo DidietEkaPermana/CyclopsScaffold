@@ -107,11 +107,6 @@ namespace CyclopsScaffold
             // Get the selected code type
             var defaultNamespace = (project.Name + ".BLL");
 
-            ////get context
-            //ICodeTypeService codeTypeService = (ICodeTypeService)Context
-            //        .ServiceProvider.GetService(typeof(ICodeTypeService));
-
-
             string modelTypeVariable = GetTypeVariable(codeType.Name);
 
             string BLLName = codeType.Name + "Service";
@@ -133,7 +128,7 @@ namespace CyclopsScaffold
                 outputFolderPath,
                 "BLL",
                 parameters,
-                skipIfExists: false);
+                skipIfExists: _viewModel.SkipIfExists);
         }
 
         private void AddMvcControllers(Project project, string selectionRelativePath, CodeType codeType, ModelType dbContextClass, ModelMetadata efMetadata, string defaultNamespace = null)
@@ -150,11 +145,6 @@ namespace CyclopsScaffold
                 defaultNamespace = (project.Name + ".Controllers");
             else
                 defaultNamespace += ".Controllers";
-
-            ////get context
-            //ICodeTypeService codeTypeService = (ICodeTypeService)Context
-            //        .ServiceProvider.GetService(typeof(ICodeTypeService));
-
 
             string modelTypeVariable = GetTypeVariable(codeType.Name);
 
@@ -175,7 +165,7 @@ namespace CyclopsScaffold
                 outputFolderPath,
                 "Controller",
                 parameters,
-                skipIfExists: false);
+                skipIfExists: _viewModel.SkipIfExists);
         }
 
         private void AddMvcModels(Project project, string selectionRelativePath, string defaultNamespace = null)
@@ -199,7 +189,7 @@ namespace CyclopsScaffold
                 outputFolderPath,
                 "Models",
                 parameters,
-                skipIfExists: false);
+                skipIfExists: _viewModel.SkipIfExists);
         }
 
         private void AddMvcViews(Project project, string selectionRelativePath, CodeType codeType, ModelMetadata efMetadata, string defaultNamespace = null)
@@ -225,7 +215,7 @@ namespace CyclopsScaffold
                 outputFolderPath,
                 "Views",
                 parameters,
-                skipIfExists: false);
+                skipIfExists: _viewModel.SkipIfExists);
         }
 
         private ProjectItem AddArea(Project pj, string AreaName)
@@ -266,7 +256,7 @@ namespace CyclopsScaffold
                     outputFolderPath,
                     "AreaRegistration",
                     parameters,
-                    skipIfExists: false);
+                    skipIfExists: _viewModel.SkipIfExists);
             }
 
             return AreaNameItem;

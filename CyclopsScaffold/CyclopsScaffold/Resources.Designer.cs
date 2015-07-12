@@ -63,26 +63,6 @@ namespace CyclopsScaffold {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
         /// </summary>
-        internal static System.Drawing.Icon @__TemplateIcon {
-            get {
-                object obj = ResourceManager.GetObject("__TemplateIcon", resourceCulture);
-                return ((System.Drawing.Icon)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
-        /// </summary>
-        internal static System.Drawing.Icon _TemplateIconSample {
-            get {
-                object obj = ResourceManager.GetObject("_TemplateIconSample", resourceCulture);
-                return ((System.Drawing.Icon)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
-        /// </summary>
         internal static System.Drawing.Icon cyclops {
             get {
                 object obj = ResourceManager.GetObject("cyclops", resourceCulture);

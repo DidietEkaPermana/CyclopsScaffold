@@ -12,8 +12,6 @@ namespace CyclopsScaffold.UI
     /// </summary>
     public class CustomViewModel// : INotifyPropertyChanged
     {
-        bool _isArea = false;
-        //CustomViewModel _parent;
         List<ModelType> _SelectedModelType;
 
         /// <summary>
@@ -91,5 +89,7 @@ namespace CyclopsScaffold.UI
         public bool IsArea { get; set; }
 
         public string SelectedArea { get; set; }
+
+        public bool SkipIfExists { get; set; }
     }
 }
