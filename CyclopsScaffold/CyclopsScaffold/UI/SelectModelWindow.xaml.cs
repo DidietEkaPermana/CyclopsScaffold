@@ -29,7 +29,18 @@ namespace CyclopsScaffold.UI
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
+            foreach (ModelType item in trModelTree.Items)
+            {
+                if (item.IsChecked)
+                    ((CustomViewModel)DataContext).SelectedModelType.Add(item);
+            }
+
             this.DialogResult = true;
+        }
+
+        private void ComboBox_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+        {
+        	trModelTree.ItemsSource = ((CustomViewModel)DataContext).ModelTypes;
         }
     }
 }

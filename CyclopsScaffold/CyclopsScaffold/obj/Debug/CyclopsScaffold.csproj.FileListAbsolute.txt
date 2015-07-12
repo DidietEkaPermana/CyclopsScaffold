@@ -12,12 +12,16 @@ C:\Didiet\Project\Scaffolding\CyclopsScaffold\CyclopsScaffold\CyclopsScaffold\ob
 C:\Didiet\Project\Scaffolding\CyclopsScaffold\CyclopsScaffold\CyclopsScaffold\bin\Debug\Templates\CustomCodeGenerator\Controller.cs.t4
 C:\Didiet\Project\Scaffolding\CyclopsScaffold\CyclopsScaffold\CyclopsScaffold\bin\Debug\Templates\CustomCodeGenerator\Views.cs.t4
 C:\Didiet\Project\Scaffolding\CyclopsScaffold\CyclopsScaffold\CyclopsScaffold\bin\Debug\Templates\CustomCodeGenerator\Models.cs.t4
-C:\Didiet\MyGIT\CyclopsScaffold\CyclopsScaffold\CyclopsScaffold\bin\Debug\Templates\CustomCodeGenerator\Models.cs.t4
 C:\Didiet\MyGIT\CyclopsScaffold\CyclopsScaffold\CyclopsScaffold\bin\Debug\Templates\CustomCodeGenerator\Views.cs.t4
+C:\Didiet\MyGIT\CyclopsScaffold\CyclopsScaffold\CyclopsScaffold\bin\Debug\Templates\CustomCodeGenerator\Models.cs.t4
+C:\Didiet\MyGIT\CyclopsScaffold\CyclopsScaffold\CyclopsScaffold\bin\Debug\Templates\MvcAreaItemTemplate\MvcAreaItemTemplate.cs.vstemplate
+C:\Didiet\MyGIT\CyclopsScaffold\CyclopsScaffold\CyclopsScaffold\bin\Debug\Templates\CustomCodeGenerator\AreaRegistration.cs.t4
+C:\Didiet\MyGIT\CyclopsScaffold\CyclopsScaffold\CyclopsScaffold\bin\Debug\Templates\MvcAreaItemTemplate\Views\_ViewStart.cshtml
+C:\Didiet\MyGIT\CyclopsScaffold\CyclopsScaffold\CyclopsScaffold\bin\Debug\Templates\CustomCodeGenerator\BLL.cs.t4
 C:\Didiet\MyGIT\CyclopsScaffold\CyclopsScaffold\CyclopsScaffold\bin\Debug\Templates\CustomCodeGenerator\Controller.cs.t4
+C:\Didiet\MyGIT\CyclopsScaffold\CyclopsScaffold\CyclopsScaffold\bin\Debug\Templates\MvcAreaItemTemplate\Views\Web.config
 C:\Didiet\MyGIT\CyclopsScaffold\CyclopsScaffold\CyclopsScaffold\bin\Debug\CyclopsScaffold.dll
 C:\Didiet\MyGIT\CyclopsScaffold\CyclopsScaffold\CyclopsScaffold\bin\Debug\CyclopsScaffold.pdb
-C:\Didiet\MyGIT\CyclopsScaffold\CyclopsScaffold\CyclopsScaffold\obj\Debug\CyclopsScaffold.csprojResolveAssemblyReference.cache
 C:\Didiet\MyGIT\CyclopsScaffold\CyclopsScaffold\CyclopsScaffold\obj\Debug\UI\SelectModelWindow.baml
 C:\Didiet\MyGIT\CyclopsScaffold\CyclopsScaffold\CyclopsScaffold\obj\Debug\UI\SelectModelWindow.g.cs
 C:\Didiet\MyGIT\CyclopsScaffold\CyclopsScaffold\CyclopsScaffold\obj\Debug\CyclopsScaffold_MarkupCompile.cache
@@ -26,4 +30,4 @@ C:\Didiet\MyGIT\CyclopsScaffold\CyclopsScaffold\CyclopsScaffold\obj\Debug\Cyclop
 C:\Didiet\MyGIT\CyclopsScaffold\CyclopsScaffold\CyclopsScaffold\obj\Debug\CyclopsScaffold.csproj.GenerateResource.Cache
 C:\Didiet\MyGIT\CyclopsScaffold\CyclopsScaffold\CyclopsScaffold\obj\Debug\CyclopsScaffold.dll
 C:\Didiet\MyGIT\CyclopsScaffold\CyclopsScaffold\CyclopsScaffold\obj\Debug\CyclopsScaffold.pdb
-C:\Didiet\MyGIT\CyclopsScaffold\CyclopsScaffold\CyclopsScaffold\bin\Debug\Templates\CustomCodeGenerator\BLL.cs.t4
+C:\Didiet\MyGIT\CyclopsScaffold\CyclopsScaffold\CyclopsScaffold\obj\Debug\CyclopsScaffold.csprojResolveAssemblyReference.cache

@@ -22,6 +22,8 @@ namespace CyclopsScaffold.UI
             DisplayName = (codeType.Namespace == null || String.IsNullOrWhiteSpace(codeType.Namespace.FullName))
                             ? codeType.Name
                             : String.Format(CultureInfo.InvariantCulture, "{0} ({1})", codeType.Name, codeType.Namespace.FullName);
+
+            IsChecked = true;
         }
 
         public CodeType CodeType { get; set; }
@@ -31,5 +33,7 @@ namespace CyclopsScaffold.UI
         public string TypeName { get; set; }
 
         public string ShortTypeName { get; set; }
+
+        public bool IsChecked { get; set; }
     }
 }

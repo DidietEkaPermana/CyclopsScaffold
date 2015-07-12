@@ -47,7 +47,7 @@ namespace CyclopsScaffold
         public override void GenerateCode()
         {
             Project projectActive = Context.ActiveProject;
-            Solution solution = projectActive.DTE.Solution;
+            Solution solution = projectActive.DTE.Solution; 
 
             List<Project> list = new List<Project>();
             foreach (Project projectA in solution.Projects)
@@ -58,16 +58,9 @@ namespace CyclopsScaffold
                     list.Add(projectA);
             }
 
-            var dbContextClass = _viewModel.SelectedModelType;
+            var dbContextClass = _viewModel.SelectedContextType;
 
-            ICodeTypeService codeTypeService = (ICodeTypeService)Context
-                    .ServiceProvider.GetService(typeof(ICodeTypeService));
-
-
-            var modelTypes = codeTypeService
-                                        .GetAllCodeTypes(projectActive)
-                                        .Where(p => p.IsValidWebProjectEntityType() && p.Namespace.FullName == dbContextClass.CodeType.Namespace.FullName)
-                                        .Select(p => new ModelType(p));
+            var modelTypes = _viewModel.SelectedModelType;
 
             //find context projects
             Project projectContext = null;
@@ -76,8 +69,21 @@ namespace CyclopsScaffold
                     projectContext = projectA;
             }
 
-            var selectionRelativePath = "Models\\";
-            AddMvcModels(projectActive, selectionRelativePath);
+            string defaultNamespace = null;
+            string AreaPath = string.Empty;
+
+            #region Area Init
+            if (_viewModel.IsArea)
+            {
+                string AreaName = _viewModel.SelectedArea;
+                ProjectItem AreaItem = AddArea(projectActive, AreaName);
+                AreaPath = string.Format("Areas\\{0}\\", AreaName);
+                defaultNamespace = AreaItem.GetDefaultNamespace();
+            }
+            #endregion Area Init
+
+            var selectionRelativePath = AreaPath;
+            AddMvcModels(projectActive, selectionRelativePath + "Models\\", defaultNamespace);
 
             foreach (var codeType in modelTypes.Select(p => p.CodeType))
             {
@@ -88,14 +94,11 @@ namespace CyclopsScaffold
                 if (efMetadata.PrimaryKeys.Count() > 1)
                     continue;
 
-                selectionRelativePath = "BLL\\";
-                AddBLL(projectContext, selectionRelativePath, codeType, dbContextClass, efMetadata);
+                AddBLL(projectContext, "BLL\\", codeType, dbContextClass, efMetadata);
 
-                selectionRelativePath = "Controllers\\";
-                AddMvcControllers(projectActive, selectionRelativePath, codeType, dbContextClass, efMetadata);
+                AddMvcControllers(projectActive, selectionRelativePath + "Controllers\\", codeType, dbContextClass, efMetadata, defaultNamespace);
 
-                selectionRelativePath = "Views\\";
-                AddMvcViews(projectActive, selectionRelativePath, codeType, efMetadata);
+                AddMvcViews(projectActive, selectionRelativePath + "Views\\", codeType, efMetadata, defaultNamespace);
             }
         }
 
@@ -104,9 +107,9 @@ namespace CyclopsScaffold
             // Get the selected code type
             var defaultNamespace = (project.Name + ".BLL");
 
-            //get context
-            ICodeTypeService codeTypeService = (ICodeTypeService)Context
-                    .ServiceProvider.GetService(typeof(ICodeTypeService));
+            ////get context
+            //ICodeTypeService codeTypeService = (ICodeTypeService)Context
+            //        .ServiceProvider.GetService(typeof(ICodeTypeService));
 
 
             string modelTypeVariable = GetTypeVariable(codeType.Name);
@@ -133,14 +136,24 @@ namespace CyclopsScaffold
                 skipIfExists: false);
         }
 
-        private void AddMvcControllers(Project project, string selectionRelativePath, CodeType codeType, ModelType dbContextClass, ModelMetadata efMetadata)
+        private void AddMvcControllers(Project project, string selectionRelativePath, CodeType codeType, ModelType dbContextClass, ModelMetadata efMetadata, string defaultNamespace = null)
         {
-            // Get the selected code type
-            var defaultNamespace = (project.Name + ".Controllers");
+            //get model namespace
+            string modelNamespace = string.Empty;
+            if (string.IsNullOrEmpty(defaultNamespace))
+                modelNamespace = (project.Name + ".Models");
+            else
+                modelNamespace = defaultNamespace + ".Models";
 
-            //get context
-            ICodeTypeService codeTypeService = (ICodeTypeService)Context
-                    .ServiceProvider.GetService(typeof(ICodeTypeService));
+            // Get the selected code type
+            if (string.IsNullOrEmpty(defaultNamespace))
+                defaultNamespace = (project.Name + ".Controllers");
+            else
+                defaultNamespace += ".Controllers";
+
+            ////get context
+            //ICodeTypeService codeTypeService = (ICodeTypeService)Context
+            //        .ServiceProvider.GetService(typeof(ICodeTypeService));
 
 
             string modelTypeVariable = GetTypeVariable(codeType.Name);
@@ -154,7 +167,7 @@ namespace CyclopsScaffold
                 {"ModelType", codeType},
                 {"Namespace", defaultNamespace},
                 {"MetadataModel", efMetadata},
-                {"RequiredNamespaces", new HashSet<string>(){codeType.Namespace.FullName, (GetParentNameSpace(codeType.Namespace.FullName) + ".BLL"), (project.Name + ".Models")}}
+                {"RequiredNamespaces", new HashSet<string>(){codeType.Namespace.FullName, (GetParentNameSpace(codeType.Namespace.FullName) + ".BLL"), modelNamespace}}
             };
 
             // Add the custom scaffolding item from T4 template.
@@ -165,10 +178,13 @@ namespace CyclopsScaffold
                 skipIfExists: false);
         }
 
-        private void AddMvcModels(Project project, string selectionRelativePath)
+        private void AddMvcModels(Project project, string selectionRelativePath, string defaultNamespace = null)
         {
             // Get the selected code type
-            var defaultNamespace = (project.Name + ".Models");
+            if (string.IsNullOrEmpty(defaultNamespace))
+                defaultNamespace = (project.Name + ".Models");
+            else
+                defaultNamespace += ".Models";
 
             string outputFolderPath = Path.Combine(selectionRelativePath, "JsonUIModels");
 
@@ -186,10 +202,13 @@ namespace CyclopsScaffold
                 skipIfExists: false);
         }
 
-        private void AddMvcViews(Project project, string selectionRelativePath, CodeType codeType, ModelMetadata efMetadata)
+        private void AddMvcViews(Project project, string selectionRelativePath, CodeType codeType, ModelMetadata efMetadata, string defaultNamespace = null)
         {
             // Get the selected code type
-            var defaultNamespace = (project.Name + ".Views");
+            if (string.IsNullOrEmpty(defaultNamespace))
+                defaultNamespace = (project.Name + ".Views");
+            else
+                defaultNamespace += ".Views";
 
             string outputFolderPath = Path.Combine(selectionRelativePath, codeType.Name + "\\Index");
 
@@ -207,6 +226,50 @@ namespace CyclopsScaffold
                 "Views",
                 parameters,
                 skipIfExists: false);
+        }
+
+        private ProjectItem AddArea(Project pj, string AreaName)
+        {
+            ProjectItem AreaItem = null;
+            foreach (ProjectItem pi in pj.ProjectItems)
+            {
+                if (pi.Name == "Areas")
+                    AreaItem = pi;
+            }
+
+            if (AreaItem == null)
+                AreaItem = pj.ProjectItems.AddFolder("Areas");
+
+            ProjectItem AreaNameItem = null;
+            foreach (ProjectItem pi in AreaItem.ProjectItems)
+            {
+                if (pi.Name == AreaName)
+                    AreaNameItem = pi;
+            }
+
+            if (AreaNameItem == null)
+            {
+                AreaNameItem = AreaItem.ProjectItems.AddFolder(AreaName);
+                AreaNameItem.ProjectItems.AddFromTemplate("Templates\\MvcAreaItemTemplate\\MvcAreaItemTemplate.cs.vstemplate", AreaName);
+
+                // Setup the scaffolding item creation parameters to be passed into the T4 template.
+                var parameters = new Dictionary<string, object>()
+                {
+                    {"AreaName", AreaName},
+                    {"Namespace", AreaNameItem.GetDefaultNamespace()}
+                };
+
+                string areaName = AreaName + "AreaRegistration";
+                var outputFolderPath = Path.Combine(string.Format("Areas\\{0}", AreaName), areaName);
+
+                this.AddFileFromTemplate(pj,
+                    outputFolderPath,
+                    "AreaRegistration",
+                    parameters,
+                    skipIfExists: false);
+            }
+
+            return AreaNameItem;
         }
 
         #region function library

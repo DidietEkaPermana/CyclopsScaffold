@@ -6,17 +6,12 @@
 <#@ import namespace="System.Text" #>
 <#@ import namespace="System.Collections.Generic" #>
 <#@ import namespace="Microsoft.AspNet.Scaffolding.Core.Metadata" #>
-<#@ parameter name="ModelType" type="EnvDTE.CodeType" #>
+<#@ parameter type="EnvDTE.CodeType" name="ModelType" #>
 <#@ parameter type="System.String" name="Namespace" #>
-<#@ parameter type="System.String" name="dbContext" #>
 <#@ parameter type="System.Collections.Generic.HashSet<System.String>" name="RequiredNamespaces" #>
 <#@ parameter type="Microsoft.AspNet.Scaffolding.Core.Metadata.ModelMetadata" name="MetadataModel" #>
-<#@ parameter type="System.String" name="EntitySetVariable" #>
 using System;
 using System.Collections.Generic;
-using System.Data.Entity;
-using System.Data.Entity.Infrastructure;
-using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 <# foreach (var namespaceName in RequiredNamespaces) { #>
@@ -27,12 +22,9 @@ namespace <#= Namespace #>
 {
 
 <# 
-	var entitySetName = MetadataModel.EntitySetName;
 	var dataParameter = ModelType.Name + "Data";
 	var primaryKeyName = MetadataModel.PrimaryKeys[0].PropertyName;
     var primaryKeyShortTypeName = MetadataModel.PrimaryKeys[0].ShortTypeName;
-    var primaryKeyDefaultValue = MetadataModel.PrimaryKeys[0].DefaultValue;
-    var primaryKeyType = MetadataModel.PrimaryKeys[0].TypeName;
 #>
     public class <#= ModelType.Name #>Controller : Controller
     {
@@ -158,9 +150,3 @@ namespace <#= Namespace #>
 		#endregion API request
     }
 }
-
-<#+ 
-	string getPrimaryKey(){
-		return MetadataModel.Properties.Where(p => p.IsPrimaryKey == true).FirstOrDefault().PropertyName;
-	}
- #>

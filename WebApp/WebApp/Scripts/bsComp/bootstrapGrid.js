@@ -1,6 +1,6 @@
 ﻿//! bootstrapGrid.js
-//! version : 0.0.2
-//! authors : Didiet Eka Permana
+//! version : 0.0.3
+//! authors : Didiet Eka Permana (didiet.permana@gmail.com)
 //! license : MIT
 
 if (typeof jQuery === 'undefined') {
@@ -336,16 +336,21 @@ if (typeof jQuery === 'undefined') {
                 postData = { "__RequestVerificationToken": RequestVerificationToken };
             }
 
+            waitingDialog.show('Please wait', { dialogSize: 'sm', progressType: 'warning' });
+
             $.post(this.gridGetData, postData, function (result) {
                 if (result.total > 0) {
                     that.dataGrid = result.payload;
                     that.totalRow = result.total;
                     that.refreshGrid();
+                    waitingDialog.hide();
                 }
                 else if (result.errors != null && result.errors.length > 0) {
+                    waitingDialog.hide();
                     alert(result.errors);
                 }
                 else if (result.total == 0) {
+                    waitingDialog.hide();
                     $("#" + this.gridName + "Table_Content").empty();
                     var htmlContent = '<tr>';
                     htmlContent += '<td colspan="' + this.fields.length + '">No data exists</td>';
@@ -353,9 +358,11 @@ if (typeof jQuery === 'undefined') {
                     $("#" + this.gridName + "Table_Content").append(htmlContent);
                 }
                 else {
+                    waitingDialog.hide();
                     alert("Generic error");
                 }
             }).fail(function (jqXHR, textStatus, errorThrown) {
+                waitingDialog.hide();
                 alert("Got some error: " + errorThrown);
             });
         },
@@ -665,18 +672,23 @@ if (typeof jQuery === 'undefined') {
         gridPageBar_Delete: function (arg) {
             var that = arg.data;
             if (confirm("Are you sure you want to delete this record?")) {
+                waitingDialog.show('Please wait', { dialogSize: 'sm', progressType: 'warning' });
                 $.post(that.gridDeleteData, { "__RequestVerificationToken": RequestVerificationToken, ID: $(this).data("id") }, function (result) {
                     if (result.total >= 0) {
+                        waitingDialog.hide();
                         alert("Record deleted");
                         that.getData();
                     }
                     else if (result.errors.length > 0) {
+                        waitingDialog.hide();
                         alert(result.errors);
                     }
                     else {
+                        waitingDialog.hide();
                         alert("Generic error");
                     }
                 }).fail(function (jqXHR, textStatus, errorThrown) {
+                    waitingDialog.hide();
                     alert("Got some error: " + errorThrown);
                 });
             }
@@ -763,21 +775,26 @@ if (typeof jQuery === 'undefined') {
 
                 data += "}";
 
-                console.log(data);
-                console.log(JSON.parse(data));
+                //console.log(data);
+                //console.log(JSON.parse(data));
 
+                waitingDialog.show('Please wait', { dialogSize: 'sm', progressType: 'warning' });
                 $.post(that.gridAddUpdateData, JSON.parse(data), function (result) {
                     if (result.total >= 0) {
                         that.getData();
                         $('#' + that.gridName + 'AddEditModal').modal('hide');
+                        waitingDialog.hide();
                     }
                     else if (result.errors.length > 0) {
+                        waitingDialog.hide();
                         alert(result.errors);
                     }
                     else {
+                        waitingDialog.hide();
                         alert("Generic error");
                     }
                 }).fail(function (jqXHR, textStatus, errorThrown) {
+                    waitingDialog.hide();
                     alert("Got some error: " + errorThrown);
                 });
             }

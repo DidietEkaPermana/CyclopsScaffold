@@ -23,3 +23,7 @@ C:\Didiet\MyGIT\CyclopsScaffold\CyclopsScaffold\CyclopsScaffoldExtension\obj\Deb
 C:\Didiet\MyGIT\CyclopsScaffold\CyclopsScaffold\CyclopsScaffoldExtension\obj\Debug\CyclopsScaffoldExtension.pdb
 C:\Didiet\MyGIT\CyclopsScaffold\CyclopsScaffold\CyclopsScaffoldExtension\obj\Debug\extension.vsixmanifest
 C:\Didiet\MyGIT\CyclopsScaffold\CyclopsScaffold\CyclopsScaffoldExtension\bin\Debug\Templates\CustomCodeGenerator\BLL.cs.t4
+C:\Didiet\MyGIT\CyclopsScaffold\CyclopsScaffold\CyclopsScaffoldExtension\bin\Debug\Templates\MvcAreaItemTemplate\MvcAreaItemTemplate.cs.vstemplate
+C:\Didiet\MyGIT\CyclopsScaffold\CyclopsScaffold\CyclopsScaffoldExtension\bin\Debug\Templates\MvcAreaItemTemplate\Views\Web.config
+C:\Didiet\MyGIT\CyclopsScaffold\CyclopsScaffold\CyclopsScaffoldExtension\bin\Debug\Templates\CustomCodeGenerator\AreaRegistration.cs.t4
+C:\Didiet\MyGIT\CyclopsScaffold\CyclopsScaffold\CyclopsScaffoldExtension\bin\Debug\Templates\MvcAreaItemTemplate\Views\_ViewStart.cshtml

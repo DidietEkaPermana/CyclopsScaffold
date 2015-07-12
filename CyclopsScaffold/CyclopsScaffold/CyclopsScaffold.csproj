@@ -41,6 +41,7 @@
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xaml" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -58,12 +59,18 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <None Include="Templates\CustomCodeGenerator\AreaRegistration.cs.t4">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <Compile Include="UI\CustomViewModel.cs" />
     <Compile Include="UI\SelectModelWindow.xaml.cs">
       <DependentUpon>SelectModelWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="UI\ModelType.cs" />
     <Compile Include="Utils\ProjectItemUtils.cs" />
+    <None Include="Templates\MvcAreaItemTemplate\Views\_ViewStart.cshtml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <None Include="Templates\CustomCodeGenerator\BLL.cs.t4">
@@ -81,6 +88,9 @@
     <None Include="Templates\CustomCodeGenerator\Models.cs.t4">
       <LastGenOutput>JsonUIModels.cs.txt</LastGenOutput>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Templates\MvcAreaItemTemplate\Views\Web.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
   <ItemGroup>
@@ -104,6 +114,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Resources\cyclops.ico" />
+    <Content Include="Templates\MvcAreaItemTemplate\MvcAreaItemTemplate.cs.vstemplate">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

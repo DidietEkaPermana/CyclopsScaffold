@@ -1,0 +1,26 @@
+﻿<VSTemplate Version="3.0.0" xmlns="http://schemas.microsoft.com/developer/vstemplate/2005" Type="Item">
+    <TemplateData>
+      <!--
+        <Name Package="{141DA93E-88A7-45D5-B15B-89117F514D64}" ID="21110"/>
+        <Description Package="{141DA93E-88A7-45D5-B15B-89117F514D64}" ID="21111"/>
+        <Icon Package="{39c9c826-8ef8-4079-8c95-428f5b1c323f}" ID="4703"/>
+      -->
+        <ProjectType>CSharp</ProjectType>
+        <SortOrder>5</SortOrder>
+        <NumberOfParentCategoriesToRollUp>2</NumberOfParentCategoriesToRollUp>
+        <RequiredFrameworkVersion>4.0</RequiredFrameworkVersion>
+        <TemplateID>MvcAreaItemTemplate.cs.vstemplate.v401</TemplateID>
+        <TemplateGroupID>MVC4</TemplateGroupID>
+        <ShowByDefault>false</ShowByDefault>
+        <Hidden>True</Hidden>
+    </TemplateData>
+    <TemplateContent>
+        <Folder Name="Controllers" TargetFolderName="Controllers" />
+        <Folder Name="Models" TargetFolderName="Models" />
+        <Folder Name="Views" TargetFolderName="Views">
+            <Folder Name="Shared" TargetFolderName="Shared" />
+            <ProjectItem OpenInEditor="false" ReplaceParameters="true" TargetFileName="_ViewStart.cshtml">_ViewStart.cshtml</ProjectItem>
+            <ProjectItem OpenInEditor="false" ReplaceParameters="true" TargetFileName="Web.config">Web.config</ProjectItem>
+        </Folder>
+    </TemplateContent>
+</VSTemplate>
