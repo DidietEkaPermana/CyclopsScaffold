@@ -213,7 +213,7 @@ namespace CyclopsScaffold
             // Add the custom scaffolding item from T4 template.
             this.AddFileFromTemplate(project,
                 outputFolderPath,
-                "Views\\ViewsWComponent",
+                "Views\\Views" + _viewModel.SelectedView,
                 parameters,
                 skipIfExists: _viewModel.SkipIfExists);
         }

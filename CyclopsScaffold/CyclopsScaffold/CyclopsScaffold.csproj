@@ -72,7 +72,7 @@
       <LastGenOutput>JsonUIModels.cs.txt</LastGenOutput>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Templates\CustomCodeGenerator\Views\ViewsWAngularJS.cs.t4">
+    <None Include="Templates\CustomCodeGenerator\Views\ViewsAngularJS.cs.t4">
       <LastGenOutput>JsonUIModels.cs.txt</LastGenOutput>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -89,7 +89,7 @@
       <Parameters>&lt;%3fxml version="1.0" encoding="utf-16"%3f&gt;
 &lt;ArrayOfParameterStorage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" /&gt;</Parameters>
     </None>
-    <None Include="Templates\CustomCodeGenerator\Views\ViewsWComponent.cs.t4">
+    <None Include="Templates\CustomCodeGenerator\Views\ViewsComponent.cs.t4">
       <LastGenOutput>JsonUIModels.cs.txt</LastGenOutput>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

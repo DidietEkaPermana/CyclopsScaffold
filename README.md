@@ -10,7 +10,8 @@ This tools have been tested in Visual Studio 2013 Community Edition.
 
 ![User Interface](https://raw.githubusercontent.com/DidietEkaPermana/CyclopsScaffold/master/Image/cs2.png)
 
-for views, you would need:
+for views, there would be 2 kind of view, plain JQuery and with component
+if you choose component, you would need:
 
 1. [moment.js](http://momentjs.com/)
 2. [bootstrap-modalloading](https://github.com/ehpc/bootstrap-waitingfor)

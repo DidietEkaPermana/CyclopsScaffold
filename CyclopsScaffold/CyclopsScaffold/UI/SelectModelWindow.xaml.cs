@@ -25,6 +25,7 @@ namespace CyclopsScaffold.UI
             InitializeComponent();
 
             DataContext = viewModel;
+            ((CustomViewModel)DataContext).SelectedView = "Plain";
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)

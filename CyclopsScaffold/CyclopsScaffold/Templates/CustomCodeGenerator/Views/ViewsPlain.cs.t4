@@ -38,7 +38,16 @@
     <table class="table table-hover">
         <thead>
             <tr>
-                <th>OccupationName</th>
+<# 
+	IEnumerable<PropertyMetadata> properties = MetadataModel.Properties;
+	foreach (PropertyMetadata property in properties) {
+		if(property.AssociationDirection != Microsoft.AspNet.Scaffolding.Core.Metadata.AssociationDirection.None || property.IsPrimaryKey)
+			continue;
+#>
+                <th><#= property.PropertyName #></th>
+<# 
+    }
+#>
                 <th></th>
             </tr>
         </thead>
@@ -85,14 +94,22 @@
             </div>
             <div class="modal-body">
                 <form class="form-horizontal">
-                    <input type="hidden" class="form-control" id="inputOccupationId">
-                    <fieldset id="@(ViewBag.Title)fields">
+                    <input type="hidden" class="form-control" id="input<#= MetadataModel.PrimaryKeys[0].PropertyName #>">
+                    <fieldset>
+<# 
+	foreach (PropertyMetadata property in properties) {
+		if(property.AssociationDirection != Microsoft.AspNet.Scaffolding.Core.Metadata.AssociationDirection.None || property.IsPrimaryKey)
+			continue;
+#>
                         <div class="form-group">
-                            <label for="inputOccupationName" class="col-lg-2 control-label">OccupationName</label>
+                            <label for="input<#= property.PropertyName #>" class="col-lg-2 control-label"><#= property.PropertyName #></label>
                             <div class="col-lg-6">
-                                <input type="text" class="form-control" id="inputOccupationName" placeholder="OccupationName">
+                                <input type="text" class="form-control" id="input<#= property.PropertyName #>" placeholder="<#= property.PropertyName #>">
                             </div>
                         </div>
+<# 
+    }
+#>
                     </fieldset>
                 </form>
             </div>
@@ -113,9 +130,8 @@
         var totalRow;
         var pageGrid = 1;
         var rowLen = 5;
-		var fields: [
+		var fields = [
 <#
-	IEnumerable<PropertyMetadata> properties = MetadataModel.Properties;
 	bool isFirst = true;
 	foreach (PropertyMetadata property in properties) {
 		if(property.AssociationDirection != Microsoft.AspNet.Scaffolding.Core.Metadata.AssociationDirection.None)
