@@ -1,9 +1,10 @@
 namespace Repository.Models
 {
     using System;
-    using System.Data.Entity;
+    using System.Collections.Generic;
+    using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
-    using System.Linq;
+    using System.Data.Entity;
 
     public partial class Fabrics : DbContext
     {
@@ -101,5 +102,154 @@ namespace Repository.Models
                 .WithRequired(e => e.Product)
                 .WillCascadeOnDelete(false);
         }
+    }
+
+    [Table("Client")]
+    public partial class Client
+    {
+        public Client()
+        {
+            Orders = new HashSet<Order>();
+        }
+
+        public int ClientId { get; set; }
+
+        [StringLength(40)]
+        public string FirstName { get; set; }
+
+        [StringLength(40)]
+        public string MiddleName { get; set; }
+
+        [StringLength(40)]
+        public string LastName { get; set; }
+
+        [StringLength(1)]
+        public string Gender { get; set; }
+
+        public DateTime? DateOfBirth { get; set; }
+
+        public double? CreditRating { get; set; }
+
+        [StringLength(7)]
+        public string XCode { get; set; }
+
+        public int? OccupationId { get; set; }
+
+        [StringLength(20)]
+        public string TelephoneNumber { get; set; }
+
+        [StringLength(100)]
+        public string Street1 { get; set; }
+
+        [StringLength(100)]
+        public string Street2 { get; set; }
+
+        [StringLength(100)]
+        public string City { get; set; }
+
+        [StringLength(15)]
+        public string ZipCode { get; set; }
+
+        public double? Longitude { get; set; }
+
+        public double? Latitude { get; set; }
+
+        public string Notes { get; set; }
+
+        public virtual Occupation Occupation { get; set; }
+
+        public virtual ICollection<Order> Orders { get; set; }
+    }
+
+    [Table("Occupation")]
+    public partial class Occupation
+    {
+        public Occupation()
+        {
+            Clients = new HashSet<Client>();
+        }
+
+        public int OccupationId { get; set; }
+
+        [StringLength(60)]
+        public string OccupationName { get; set; }
+
+        public virtual ICollection<Client> Clients { get; set; }
+    }
+
+    [Table("Order")]
+    public partial class Order
+    {
+        public Order()
+        {
+            OrderLines = new HashSet<OrderLine>();
+        }
+
+        [DatabaseGenerated(DatabaseGeneratedOption.None)]
+        public int OrderId { get; set; }
+
+        public int? ClientId { get; set; }
+
+        public DateTime? OrderDate { get; set; }
+
+        [Column(TypeName = "numeric")]
+        public decimal? OrderTotal { get; set; }
+
+        [StringLength(1)]
+        public string OrderStatus { get; set; }
+
+        public virtual Client Client { get; set; }
+
+        public virtual ICollection<OrderLine> OrderLines { get; set; }
+    }
+
+    [Table("OrderLine")]
+    public partial class OrderLine
+    {
+        [Key]
+        [Column(Order = 0)]
+        [DatabaseGenerated(DatabaseGeneratedOption.None)]
+        public int OrderId { get; set; }
+
+        [Key]
+        [Column(Order = 1)]
+        [DatabaseGenerated(DatabaseGeneratedOption.None)]
+        public int LineNumber { get; set; }
+
+        public int ProductId { get; set; }
+
+        [Column(TypeName = "numeric")]
+        public decimal Qty { get; set; }
+
+        [Column(TypeName = "numeric")]
+        public decimal LineTotal { get; set; }
+
+        public virtual Order Order { get; set; }
+
+        public virtual Product Product { get; set; }
+    }
+
+    [Table("Product")]
+    public partial class Product
+    {
+        public Product()
+        {
+            OrderLines = new HashSet<OrderLine>();
+        }
+
+        public int ProductId { get; set; }
+
+        [StringLength(80)]
+        public string ProductName { get; set; }
+
+        [Column(TypeName = "smallmoney")]
+        public decimal? Price { get; set; }
+
+        public bool? Active { get; set; }
+
+        [Column(TypeName = "numeric")]
+        public decimal? Stock { get; set; }
+
+        public virtual ICollection<OrderLine> OrderLines { get; set; }
     }
 }

@@ -186,13 +186,6 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
-    <Compile Include="Areas\ribs\ribsAreaRegistration.cs" />
-    <Compile Include="Areas\tree\Controllers\ClientController.cs" />
-    <Compile Include="Areas\tree\Controllers\OccupationController.cs" />
-    <Compile Include="Areas\tree\Controllers\OrderController.cs" />
-    <Compile Include="Areas\tree\Controllers\ProductController.cs" />
-    <Compile Include="Areas\tree\Models\JsonUIModels.cs" />
-    <Compile Include="Areas\tree\treeAreaRegistration.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ManageController.cs" />
@@ -230,12 +223,6 @@
     <Content Include="Scripts\bsComp\bootstrap-select.min.js.map" />
     <Content Include="Scripts\bsComp\bootstrapGrid.min.js.map" />
     <Content Include="Scripts\bsComp\bootstrap-modalloading.min.js.map" />
-    <Content Include="Areas\ribs\Views\web.config" />
-    <Content Include="Areas\tree\Views\web.config" />
-    <Content Include="Areas\tree\Views\Product\Index.cshtml" />
-    <Content Include="Areas\tree\Views\Order\Index.cshtml" />
-    <Content Include="Areas\tree\Views\Occupation\Index.cshtml" />
-    <Content Include="Areas\tree\Views\Client\Index.cshtml" />
     <None Include="Scripts\jquery-2.1.4.intellisense.js" />
     <Content Include="Icon.png" />
     <Content Include="ReadMe.txt" />
@@ -304,10 +291,6 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
-    <Folder Include="Areas\ribs\Controllers\" />
-    <Folder Include="Areas\ribs\Models\" />
-    <Folder Include="Areas\ribs\Views\Shared\" />
-    <Folder Include="Areas\tree\Views\Shared\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
