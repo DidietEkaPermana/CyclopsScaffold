@@ -10,7 +10,7 @@ namespace CyclopsScaffold.UI
     /// <summary>
     /// View model for code types so that it can be displayed on the UI.
     /// </summary>
-    public class CustomViewModel// : INotifyPropertyChanged
+    public class CustomViewModel
     {
         List<ModelType> _SelectedModelType;
 

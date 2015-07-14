@@ -213,7 +213,7 @@ namespace CyclopsScaffold
             // Add the custom scaffolding item from T4 template.
             this.AddFileFromTemplate(project,
                 outputFolderPath,
-                "Views",
+                "Views\\ViewsWComponent",
                 parameters,
                 skipIfExists: _viewModel.SkipIfExists);
         }
@@ -303,5 +303,34 @@ namespace CyclopsScaffold
             return typeName.Substring(0, 1).ToLower() + typeName.Substring(1, typeName.Length - 1);
         }
         #endregion function library
+
+        #region unused
+        //private void AddDTOModels(Project project, string selectionRelativePath, CodeType codeType, ModelMetadata efMetadata)
+        //{
+        //    var defaultNamespace = (project.Name + ".Models");
+
+        //    string outputFolderPath = Path.Combine(selectionRelativePath, codeType.Name + "DTO");
+
+        //    // Setup the scaffolding item creation parameters to be passed into the T4 template.
+        //    var parameters = new Dictionary<string, object>()
+        //    {
+        //        {"ModelType", codeType},
+        //        {"Namespace", defaultNamespace},
+        //        {"MetadataModel", efMetadata}
+        //    };
+
+        //    foreach (var pop in efMetadata.Properties)
+        //    {
+        //        //pop.TypeName;
+        //    }
+
+        //    // Add the custom scaffolding item from T4 template.
+        //    this.AddFileFromTemplate(project,
+        //        outputFolderPath,
+        //        "DTO",
+        //        parameters,
+        //        skipIfExists: _viewModel.SkipIfExists);
+        //}
+        #endregion unused
     }
 }
