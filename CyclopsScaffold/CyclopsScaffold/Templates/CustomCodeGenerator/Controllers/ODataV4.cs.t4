@@ -1,0 +1,109 @@
+﻿<#@ template language="C#" HostSpecific="True" Debug="True" #>
+<#@ assembly name="System.Core" #>
+<#@ assembly name="EnvDTE" #>
+<#@ ScaffoldingAssembly Processor="ScaffoldingAssemblyLoader" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="Microsoft.AspNet.Scaffolding.Core.Metadata" #>
+<#@ parameter type="EnvDTE.CodeType" name="ModelType" #>
+<#@ parameter type="System.String" name="Namespace" #>
+<#@ parameter type="System.Collections.Generic.HashSet<System.String>" name="RequiredNamespaces" #>
+<#@ parameter type="Microsoft.AspNet.Scaffolding.Core.Metadata.ModelMetadata" name="MetadataModel" #>
+using System.Linq;
+using System.Net;
+using System.Threading.Tasks;
+using System.Web.Http;
+using System.Web.Mvc;
+using System.Web.OData;
+<# foreach (var namespaceName in RequiredNamespaces) { #>
+using <#= namespaceName #>;
+<# } #>
+
+namespace <#= Namespace #>
+{
+
+<# 
+	var dataParameter = ModelType.Name + "Data";
+	var primaryKeyName = MetadataModel.PrimaryKeys[0].PropertyName;
+    var primaryKeyShortTypeName = MetadataModel.PrimaryKeys[0].ShortTypeName;
+#>
+    public class <#= ModelType.Name #>Controller : ODataController
+    {
+		// GET: odata/<#= ModelType.Name #>
+        [EnableQuery]
+        public IQueryable<<#= ModelType.Name #>> Get()
+        {
+            return (new <#= ModelType.Name #>Service()).Get();
+        }
+
+		// GET: odata/<#= ModelType.Name #>(5)
+        [EnableQuery]
+        public SingleResult<<#= ModelType.Name #>> Get([FromODataUri] <#= primaryKeyShortTypeName #> key)
+        {
+            return SingleResult.Create((new <#= ModelType.Name #>Service()).Get().Where(p => p.<#= primaryKeyName #> == key));
+        }
+
+        // PUT: odata/<#= ModelType.Name #>(5)
+        public async Task<IHttpActionResult> Put([FromODataUri] <#= primaryKeyShortTypeName #> key, <#= ModelType.Name #> patch)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            if (key != patch.<#= primaryKeyName #>)
+            {
+                return BadRequest();
+            }
+
+            await (new <#= ModelType.Name #>Service()).Update<#= ModelType.Name #>(patch);
+
+            return Updated(patch);
+        }
+
+        // POST: odata/<#= ModelType.Name #>
+        public async Task<IHttpActionResult> Post(<#= ModelType.Name #> <#= dataParameter #>)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            await (new <#= ModelType.Name #>Service()).Create<#= ModelType.Name #>(<#= dataParameter #>);
+
+            return Created(<#= dataParameter #>);
+        }
+
+        // PATCH: odata/<#= ModelType.Name #>(5)
+        public async Task<IHttpActionResult> Patch([FromODataUri] <#= primaryKeyShortTypeName #> key, Delta<<#= ModelType.Name #>> patch)
+        {
+            Validate(patch.GetEntity());
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            <#= ModelType.Name #> <#= dataParameter #> = await (new <#= ModelType.Name #>Service()).Get<#= ModelType.Name #>(key);
+            if (<#= dataParameter #> == null)
+            {
+                return NotFound();
+            }
+
+            patch.Patch(<#= dataParameter #>);
+
+            await (new <#= ModelType.Name #>Service()).Update<#= ModelType.Name #>(<#= dataParameter #>);
+
+            return Updated(<#= dataParameter #>);
+        }
+
+        // DELETE: odata/<#= ModelType.Name #>(5)
+        public async Task<IHttpActionResult> Delete([FromODataUri] <#= primaryKeyShortTypeName #> key)
+        {
+            await (new <#= ModelType.Name #>Service()).Delete<#= ModelType.Name #>(key);
+
+            return StatusCode(HttpStatusCode.NoContent);
+        }
+    }
+}

@@ -64,10 +64,13 @@
 #>
                 ],
 				serverAction: true, 
-                gridAddUpdateData: "/<#= ModelType.Name #>/AddUpdate<#= ModelType.Name #>",
-                //gridGetData: "/<#= ModelType.Name #>/Get<#= ModelType.Name #>List",
-				gridGetData: "/<#= ModelType.Name #>/Read<#= ModelType.Name #>",
-                gridDeleteData: "/<#= ModelType.Name #>/Delete<#= ModelType.Name #>"
+				transport: [{
+					type: 'API',
+					create: [{url: "/<#= ModelType.Name #>/Post", method: "POST"}],
+					read: [{url: "/<#= ModelType.Name #>/Get", method: "POST"}],
+					update: [{url: "/<#= ModelType.Name #>/Put", method: "POST"}],
+					delete: [{url: "/<#= ModelType.Name #>/Delete", method: "POST"}]
+				}]
             });
         })
     </script>

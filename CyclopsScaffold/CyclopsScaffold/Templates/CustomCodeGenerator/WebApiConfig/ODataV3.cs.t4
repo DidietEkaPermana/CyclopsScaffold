@@ -1,0 +1,31 @@
+﻿<#@ template language="C#" #>
+<#@ assembly name="System.Core" #>
+<#@ assembly name="EnvDTE" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ parameter type="System.String" name="Namespace" #>
+<#@ parameter type="System.String" name="dbContext" #>
+<#@ parameter type="System.Collections.Generic.List<EnvDTE.CodeType>" name="ListModelType" #>
+<#@ parameter type="System.String" name="ModelNameSpace" #>
+using System.Web.Http;
+using System.Web.Http.OData.Builder;
+using System.Web.Http.OData.Extensions;
+using <#= Namespace #>.Models;
+using <#= ModelNameSpace #>;
+
+namespace <#= Namespace #>
+{
+    public static class WebApiConfig
+    {
+        public static void Register(HttpConfiguration config)
+        {
+            ODataConventionModelBuilder builder = new ODataConventionModelBuilder();
+
+<# foreach (var ModelType in ListModelType) { #>
+			builder.EntitySet<<#= ModelType.Name #>>("<#= ModelType.Name #>");
+<# } #>
+            config.Routes.MapODataServiceRoute("ODataRoute", "<#= dbContext #>Odata", builder.GetEdmModel());
+        }
+    }
+}

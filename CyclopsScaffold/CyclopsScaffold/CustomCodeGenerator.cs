@@ -72,6 +72,11 @@ namespace CyclopsScaffold
             string defaultNamespace = null;
             string AreaPath = string.Empty;
 
+            //return;
+
+            if (_viewModel.SelectedController != "MVC")
+                AddWebApiConfig(projectActive, dbContextClass, modelTypes.Select(p => p.CodeType).ToList(), projectContext.Name + ".Models");
+
             #region Area Init
             if (_viewModel.IsArea)
             {
@@ -94,11 +99,19 @@ namespace CyclopsScaffold
                 if (efMetadata.PrimaryKeys.Count() > 1)
                     continue;
 
+                if (_viewModel.SelectedController != "MVC")
+                    AddViewsControllers(projectActive, selectionRelativePath + "Controllers\\", codeType, defaultNamespace);
+
                 AddBLL(projectContext, "BLL\\", codeType, dbContextClass, efMetadata);
 
-                AddMvcControllers(projectActive, selectionRelativePath + "Controllers\\", codeType, dbContextClass, efMetadata, defaultNamespace);
+                if (_viewModel.SelectedController == "WEBAPI")
+                    AddMvcControllers(projectActive, selectionRelativePath + "Controllers\\API\\", codeType, efMetadata, defaultNamespace);
+                else if (_viewModel.SelectedController == "ODataV3" || _viewModel.SelectedController == "ODataV4")
+                    AddMvcControllers(projectActive, selectionRelativePath + "Controllers\\OData\\", codeType, efMetadata, defaultNamespace);
+                else
+                    AddMvcControllers(projectActive, selectionRelativePath + "Controllers\\", codeType, efMetadata, defaultNamespace);
 
-                AddMvcViews(projectActive, selectionRelativePath + "Views\\", codeType, efMetadata, defaultNamespace);
+                AddMvcViews(projectActive, selectionRelativePath + "Views\\", codeType, dbContextClass, efMetadata, defaultNamespace);
             }
         }
 
@@ -131,7 +144,7 @@ namespace CyclopsScaffold
                 skipIfExists: _viewModel.SkipIfExists);
         }
 
-        private void AddMvcControllers(Project project, string selectionRelativePath, CodeType codeType, ModelType dbContextClass, ModelMetadata efMetadata, string defaultNamespace = null)
+        private void AddMvcControllers(Project project, string selectionRelativePath, CodeType codeType, ModelMetadata efMetadata, string defaultNamespace = null)
         {
             //get model namespace
             string modelNamespace = string.Empty;
@@ -145,6 +158,11 @@ namespace CyclopsScaffold
                 defaultNamespace = (project.Name + ".Controllers");
             else
                 defaultNamespace += ".Controllers";
+
+            if (_viewModel.SelectedController == "WEBAPI")
+                defaultNamespace += ".API";
+            else if (_viewModel.SelectedController == "ODataV3" || _viewModel.SelectedController == "ODataV4")
+                defaultNamespace += ".OData";
 
             string modelTypeVariable = GetTypeVariable(codeType.Name);
 
@@ -163,7 +181,33 @@ namespace CyclopsScaffold
             // Add the custom scaffolding item from T4 template.
             this.AddFileFromTemplate(project,
                 outputFolderPath,
-                "Controller",
+                "Controllers\\" + _viewModel.SelectedController,
+                parameters,
+                skipIfExists: _viewModel.SkipIfExists);
+        }
+
+        private void AddViewsControllers(Project project, string selectionRelativePath, CodeType codeType, string defaultNamespace = null)
+        {
+            // Get the selected code type
+            if (string.IsNullOrEmpty(defaultNamespace))
+                defaultNamespace = (project.Name + ".Controllers");
+            else
+                defaultNamespace += ".Controllers";
+
+            string controllerName = codeType.Name + "Controller";
+            string outputFolderPath = Path.Combine(selectionRelativePath, controllerName);
+
+            // Setup the scaffolding item creation parameters to be passed into the T4 template.
+            var parameters = new Dictionary<string, object>()
+            {
+                {"ModelType", codeType},
+                {"Namespace", defaultNamespace}
+            };
+
+            // Add the custom scaffolding item from T4 template.
+            this.AddFileFromTemplate(project,
+                outputFolderPath,
+                "Controllers\\Views",
                 parameters,
                 skipIfExists: _viewModel.SkipIfExists);
         }
@@ -192,7 +236,28 @@ namespace CyclopsScaffold
                 skipIfExists: _viewModel.SkipIfExists);
         }
 
-        private void AddMvcViews(Project project, string selectionRelativePath, CodeType codeType, ModelMetadata efMetadata, string defaultNamespace = null)
+        private void AddWebApiConfig(Project project, ModelType dbContextClass, List<CodeType> ListModelType, string ModelNameSpace)
+        {
+            string outputFolderPath = "App_Start\\WebApiConfig";
+
+            // Setup the scaffolding item creation parameters to be passed into the T4 template.
+            var parameters = new Dictionary<string, object>()
+            {
+                {"Namespace", project.Name},
+                {"dbContext", dbContextClass.ShortTypeName},
+                {"ListModelType", ListModelType},
+                {"ModelNameSpace", ModelNameSpace}
+            };
+
+            // Add the custom scaffolding item from T4 template.
+            this.AddFileFromTemplate(project,
+                outputFolderPath,
+                "WebApiConfig\\" + _viewModel.SelectedController,
+                parameters,
+                skipIfExists: _viewModel.SkipIfExists);
+        }
+
+        private void AddMvcViews(Project project, string selectionRelativePath, CodeType codeType, ModelType dbContextClass, ModelMetadata efMetadata, string defaultNamespace = null)
         {
             // Get the selected code type
             if (string.IsNullOrEmpty(defaultNamespace))
@@ -207,13 +272,14 @@ namespace CyclopsScaffold
             {
                 {"ModelType", codeType},
                 {"Namespace", defaultNamespace},
+                {"dbContext", dbContextClass.ShortTypeName},
                 {"MetadataModel", efMetadata}
             };
 
             // Add the custom scaffolding item from T4 template.
             this.AddFileFromTemplate(project,
                 outputFolderPath,
-                "Views\\Views" + _viewModel.SelectedView,
+                "Views\\Views" + _viewModel.SelectedView + _viewModel.SelectedController,
                 parameters,
                 skipIfExists: _viewModel.SkipIfExists);
         }

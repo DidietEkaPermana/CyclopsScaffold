@@ -93,5 +93,7 @@ namespace CyclopsScaffold.UI
         public bool SkipIfExists { get; set; }
 
         public string SelectedView { get; set; }
+
+        public string SelectedController { get; set; }
     }
 }

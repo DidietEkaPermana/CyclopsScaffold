@@ -9,6 +9,7 @@
 <#@ output extension=".cshtml" #>
 <#@ parameter name="ModelType" type="EnvDTE.CodeType" #>
 <#@ parameter type="System.String" name="Namespace" #>
+<#@ parameter type="System.String" name="dbContext" #>
 <#@ parameter type="Microsoft.AspNet.Scaffolding.Core.Metadata.ModelMetadata" name="MetadataModel" #>
 @{
     ViewBag.Title = "<#= ModelType.Name #>";
@@ -64,10 +65,13 @@
 #>
                 ],
 				serverAction: true, 
-                gridAddUpdateData: "/<#= ModelType.Name #>/AddUpdate<#= ModelType.Name #>",
-                //gridGetData: "/<#= ModelType.Name #>/Get<#= ModelType.Name #>List",
-				gridGetData: "/<#= ModelType.Name #>/Read<#= ModelType.Name #>",
-                gridDeleteData: "/<#= ModelType.Name #>/Delete<#= ModelType.Name #>"
+				transport: [{
+					type: 'ODataV3',
+					create: [{url: "/<#= dbContext #>Odata/<#= ModelType.Name #>"}],
+					read: [{url: "/<#= dbContext #>Odata/<#= ModelType.Name #>"}],
+					update: [{url: "/<#= dbContext #>Odata/<#= ModelType.Name #>"}],
+					delete: [{url: "/<#= dbContext #>Odata/<#= ModelType.Name #>"}]
+				}]
             });
         })
     </script>

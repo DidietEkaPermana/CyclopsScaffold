@@ -13,7 +13,8 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using System.Web.Mvc;
+using System.Web.Http;
+using System.Web.Http.Description;
 <# foreach (var namespaceName in RequiredNamespaces) { #>
 using <#= namespaceName #>;
 <# } #>
@@ -26,36 +27,12 @@ namespace <#= Namespace #>
 	var primaryKeyName = MetadataModel.PrimaryKeys[0].PropertyName;
     var primaryKeyShortTypeName = MetadataModel.PrimaryKeys[0].ShortTypeName;
 #>
-    public class <#= ModelType.Name #>Controller : Controller
+    public class <#= ModelType.Name #>Controller : ApiController
     {
-		// GET: News
-        public ActionResult Index()
-        {
-            return View();
-        }
-
-		#region API request
-		[ValidateAntiForgeryToken]
-		public async Task<JsonResult> AddUpdate<#= ModelType.Name #>(<#= ModelType.Name #> <#= dataParameter #>)
-        {
-			JsonData data = new JsonData();
-
-            try
-            {
-				if(<#= dataParameter #>.<#= primaryKeyName #> == 0)
-					return await Create<#= ModelType.Name #>(<#= dataParameter #>);
-				else
-					return await Update<#= ModelType.Name #>(<#= dataParameter #>);
-            }
-            catch (Exception ex)
-            {
-                data.errors = ex.Message;
-            }
-
-			return Json(data);
-        }
-
-		private async Task<JsonResult> Create<#= ModelType.Name #>(<#= ModelType.Name #> <#= dataParameter #>)
+		#region REST Request
+		// POST: api/<#= ModelType.Name #>
+        [ResponseType(typeof(JsonData))]
+		public async Task<JsonData> Post(<#= ModelType.Name #> <#= dataParameter #>)
         {
 			JsonData data = new JsonData();
 
@@ -70,17 +47,18 @@ namespace <#= Namespace #>
                 data.errors = ex.Message;
             }
 
-			return Json(data);
+			return data;
         }
 
-		[ValidateAntiForgeryToken]
-		public async Task<JsonResult> Get<#= ModelType.Name #>List()
+		// GET: api/<#= ModelType.Name #>
+		[ResponseType(typeof(JsonData))]
+		public async Task<JsonData> Get()
 		{
 			JsonData data = new JsonData();
 
             try
             {
-				data.payload = await (new <#= ModelType.Name #>Service()).Get<#= ModelType.Name #>List();
+				data.payload = await (new <#= ModelType.Name #>Service()).Get<#= ModelType.Name #>();
 
 				data.total = ((List<<#= ModelType.Name #>>)data.payload).Count;
             }
@@ -89,11 +67,42 @@ namespace <#= Namespace #>
                 data.errors = ex.Message;
             }
 
-            return Json(data);
+            return data;
 		}
 
-		[ValidateAntiForgeryToken]
-		public async Task<JsonResult> Read<#= ModelType.Name #>(int iPage, int iLength, string strSearch)
+		// GET: api/<#= ModelType.Name #>/5
+        [ResponseType(typeof(JsonData))]
+		public async Task<JsonData> Get(<#= primaryKeyShortTypeName #> id)
+        {
+
+            JsonData data = new JsonData();
+
+            try
+            {
+                <#= ModelType.Name #> <#= dataParameter #> = await (new <#= ModelType.Name #>Service()).Get<#= ModelType.Name #>(id);
+
+                if (<#= dataParameter #> == null)
+                {
+                    data.errors = "Data not found";
+                    data.total = 0;
+                }
+                else
+                {
+                    data.payload = <#= dataParameter #>;
+                    data.total = 1;
+                }
+            }
+            catch (Exception ex)
+            {
+                data.errors = ex.Message;
+            }
+
+            return data;
+        }
+
+		// GET: api/<#= ModelType.Name #>/Read
+		[ResponseType(typeof(JsonData))]
+		public async Task<JsonData> Read(int iPage, int iLength, string strSearch)
 		{
 			JsonData data = new JsonData();
 
@@ -108,10 +117,12 @@ namespace <#= Namespace #>
                 data.errors = ex.Message;
             }
 
-            return Json(data);
+            return data;
 		}
 
-		private async Task<JsonResult> Update<#= ModelType.Name #>(<#= ModelType.Name #> <#= dataParameter #>)
+		// PUT: api/<#= ModelType.Name #>/5
+        [ResponseType(typeof(JsonData))]
+		public async Task<JsonData> Put(<#= primaryKeyShortTypeName #> id, <#= ModelType.Name #> <#= dataParameter #>)
         {
             JsonData data = new JsonData();
 
@@ -126,11 +137,12 @@ namespace <#= Namespace #>
                 data.errors = ex.Message;
             }
 
-            return Json(data);
+            return data;
         }
 
-		[ValidateAntiForgeryToken]
-        public async Task<JsonResult> Delete<#= ModelType.Name #>(<#= primaryKeyShortTypeName #> id)
+		// DELETE: api/<#= ModelType.Name #>/5
+        [ResponseType(typeof(JsonData))]
+		public async Task<JsonData> Delete(<#= primaryKeyShortTypeName #> id)
         {
             JsonData data = new JsonData();
 
@@ -145,8 +157,8 @@ namespace <#= Namespace #>
                 data.errors = ex.Message;
             }
 
-            return Json(data);
+            return data;
         }
-		#endregion API request
+		#endregion REST Request
     }
 }

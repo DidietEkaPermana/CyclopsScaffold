@@ -68,11 +68,59 @@
     </Compile>
     <Compile Include="UI\ModelType.cs" />
     <Compile Include="Utils\ProjectItemUtils.cs" />
-    <None Include="Templates\CustomCodeGenerator\Views\ViewsPlain.cs.t4">
+    <None Include="Templates\CustomCodeGenerator\Controllers\Views.cs.t4">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Templates\CustomCodeGenerator\Controllers\ODataV4.cs.t4">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Templates\CustomCodeGenerator\Controllers\ODataV3.cs.t4">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Templates\CustomCodeGenerator\Controllers\WEBAPI.cs.t4">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Templates\CustomCodeGenerator\Views\ViewsComponentODataV4.cs.t4">
+      <LastGenOutput>JsonUIModels.cs.txt</LastGenOutput>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Templates\CustomCodeGenerator\Views\ViewsComponentODataV3.cs.t4">
+      <LastGenOutput>JsonUIModels.cs.txt</LastGenOutput>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Templates\CustomCodeGenerator\Views\ViewsComponentWEBAPI.cs.t4">
+      <LastGenOutput>JsonUIModels.cs.txt</LastGenOutput>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Templates\CustomCodeGenerator\Views\ViewsPlainODataV4.cs.t4">
+      <LastGenOutput>JsonUIModels.cs.txt</LastGenOutput>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Templates\CustomCodeGenerator\Views\ViewsPlainODataV3.cs.t4">
+      <LastGenOutput>JsonUIModels.cs.txt</LastGenOutput>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Templates\CustomCodeGenerator\Views\ViewsPlainWEBAPI.cs.t4">
+      <LastGenOutput>JsonUIModels.cs.txt</LastGenOutput>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Templates\CustomCodeGenerator\Views\ViewsPlainMVC.cs.t4">
       <LastGenOutput>JsonUIModels.cs.txt</LastGenOutput>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Templates\CustomCodeGenerator\Views\ViewsAngularJS.cs.t4">
+      <LastGenOutput>JsonUIModels.cs.txt</LastGenOutput>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Templates\CustomCodeGenerator\WebApiConfig\ODataV4.cs.t4">
+      <LastGenOutput>JsonUIModels.cs.txt</LastGenOutput>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Templates\CustomCodeGenerator\WebApiConfig\ODataV3.cs.t4">
+      <LastGenOutput>JsonUIModels.cs.txt</LastGenOutput>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Templates\CustomCodeGenerator\WebApiConfig\WEBAPI.cs.t4">
       <LastGenOutput>JsonUIModels.cs.txt</LastGenOutput>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -84,12 +132,12 @@
     <None Include="Templates\CustomCodeGenerator\BLL.cs.t4">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="Templates\CustomCodeGenerator\Controller.cs.t4">
+    <None Include="Templates\CustomCodeGenerator\Controllers\MVC.cs.t4">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <Parameters>&lt;%3fxml version="1.0" encoding="utf-16"%3f&gt;
 &lt;ArrayOfParameterStorage xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" /&gt;</Parameters>
     </None>
-    <None Include="Templates\CustomCodeGenerator\Views\ViewsComponent.cs.t4">
+    <None Include="Templates\CustomCodeGenerator\Views\ViewsComponentMVC.cs.t4">
       <LastGenOutput>JsonUIModels.cs.txt</LastGenOutput>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

@@ -30,19 +30,26 @@
               DisplayMemberPath="DisplayName"
               SelectedItem="{Binding SelectedContextType, Mode=OneWayToSource}"
               Width="311" SelectionChanged="ComboBox_SelectionChanged"/>
-        <Button Content="Add" IsDefault="True" HorizontalAlignment="Left" Margin="317,281,0,0" VerticalAlignment="Top" Width="75" RenderTransformOrigin="-0.187,0.75" Click="Button_Click"/>
-        <Button Content="Cancel" IsCancel="True" HorizontalAlignment="Left" VerticalAlignment="Top" Width="75" Margin="405,281,0,0"/>
+        <Button Content="Add" IsDefault="True" HorizontalAlignment="Left" Margin="317,301,0,0" VerticalAlignment="Top" Width="75" RenderTransformOrigin="-0.187,0.75" Click="Button_Click"/>
+        <Button Content="Cancel" IsCancel="True" HorizontalAlignment="Left" VerticalAlignment="Top" Width="75" Margin="405,301,0,0"/>
         <TreeView x:Name="trModelTree" HorizontalAlignment="Left" Height="126" Margin="36,49,0,0" VerticalAlignment="Top" Width="444" ItemTemplate="{StaticResource CheckBoxItemTemplate}">
         </TreeView>
-        <CheckBox Content="Areas:" HorizontalAlignment="Left" IsChecked="{Binding IsArea}" Margin="36,186,0,0" VerticalAlignment="Top"/>
-        <ComboBox HorizontalAlignment="Left" Margin="107,186,0,0" ItemsSource="{Binding Areas}" 
+        <CheckBox Content="Areas:" HorizontalAlignment="Left" IsChecked="{Binding IsArea}" Margin="36,207,0,0" VerticalAlignment="Top"/>
+        <ComboBox HorizontalAlignment="Left" Margin="144,207,0,0" ItemsSource="{Binding Areas}" 
                   VerticalAlignment="Top" Width="120" IsEditable="True" Text="{Binding SelectedArea}"
                   />
-        <CheckBox Content="Skip If Exists" HorizontalAlignment="Left" IsChecked="{Binding SkipIfExists}" Margin="36,256,0,0" VerticalAlignment="Top"/>
-        <Label Content="View type" HorizontalAlignment="Left"   Margin="36,210,0,0" VerticalAlignment="Top"/>
-        <ComboBox HorizontalAlignment="Left" Margin="107,212,0,0" VerticalAlignment="Top" Width="120" SelectedIndex="0" Text="{Binding SelectedView}">
+        <CheckBox Content="Skip If Exists" HorizontalAlignment="Left" IsChecked="{Binding SkipIfExists}" Margin="36,275,0,0" VerticalAlignment="Top"/>
+        <Label Content="View type" HorizontalAlignment="Left"   Margin="36,231,0,0" VerticalAlignment="Top"/>
+        <ComboBox HorizontalAlignment="Left" Margin="144,233,0,0" VerticalAlignment="Top" Width="120" SelectedIndex="0" Text="{Binding SelectedView}">
             <ComboBoxItem Content="Plain"/>
             <ComboBoxItem Content="Component"/>
+        </ComboBox>
+        <Label Content="Controller type" HorizontalAlignment="Left"   Margin="36,178,0,0" VerticalAlignment="Top"/>
+        <ComboBox HorizontalAlignment="Left" Margin="144,180,0,0" VerticalAlignment="Top" Width="120" SelectedIndex="0" Text="{Binding SelectedController}">
+            <ComboBoxItem Content="MVC"/>
+            <ComboBoxItem Content="WEBAPI"/>
+            <ComboBoxItem Content="ODataV3"/>
+            <ComboBoxItem Content="ODataV4"/>
         </ComboBox>
     </Grid>
 </Window>

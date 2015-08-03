@@ -52,6 +52,18 @@ namespace <#= Namespace #>
         public <#= ModelType.Name #>Service(<#= dbContext #> context) { _container = context; }
 
         public <#= ModelType.Name #>Service() { }
+
+		public IQueryable<<#= ModelType.Name #>> Get()
+        {
+            try
+            {
+                return Container.<#= entitySetName #>;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
 		
 		public async Task<<#= ModelType.Name #>> Create<#= ModelType.Name #>(<#= ModelType.Name #> <#= dataParameter #>)
         {
@@ -69,7 +81,7 @@ namespace <#= Namespace #>
 			return <#= dataParameter #>;;
         }
 
-		public async Task<List<<#= ModelType.Name #>>> Get<#= ModelType.Name #>List()
+		public async Task<List<<#= ModelType.Name #>>> Get<#= ModelType.Name #>()
 		{
 			try
             {
@@ -97,6 +109,40 @@ namespace <#= Namespace #>
 	}
 #>
 								}).ToList();
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+		}
+
+		public async Task<<#= ModelType.Name #>> Get<#= ModelType.Name #>(<#= primaryKeyShortTypeName #> id)
+		{
+			try
+            {
+				var <#= EntitySetVariable #> = Container.<#= entitySetName #>;
+
+				return await <#= EntitySetVariable #>.Where(p => p.<#= getPrimaryKey() #> == id)
+								.Select(p => new <#= ModelType.Name #> {
+<#
+	isFirst = true;
+	foreach (PropertyMetadata property in properties) {
+
+		if(property.AssociationDirection != Microsoft.AspNet.Scaffolding.Core.Metadata.AssociationDirection.None)
+			continue;
+
+        if(isFirst) {
+			isFirst = false;
+#>									<#= property.PropertyName #> = p.<#= property.PropertyName #>
+<#
+        }
+		else{
+#>									,<#= property.PropertyName #> = p.<#= property.PropertyName #>
+<#
+        }
+	}
+#>
+								}).FirstOrDefaultAsync();
             }
             catch (Exception)
             {

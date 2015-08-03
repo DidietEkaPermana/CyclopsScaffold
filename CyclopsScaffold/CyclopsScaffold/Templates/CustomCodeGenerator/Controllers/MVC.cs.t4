@@ -35,27 +35,7 @@ namespace <#= Namespace #>
         }
 
 		#region API request
-		[ValidateAntiForgeryToken]
-		public async Task<JsonResult> AddUpdate<#= ModelType.Name #>(<#= ModelType.Name #> <#= dataParameter #>)
-        {
-			JsonData data = new JsonData();
-
-            try
-            {
-				if(<#= dataParameter #>.<#= primaryKeyName #> == 0)
-					return await Create<#= ModelType.Name #>(<#= dataParameter #>);
-				else
-					return await Update<#= ModelType.Name #>(<#= dataParameter #>);
-            }
-            catch (Exception ex)
-            {
-                data.errors = ex.Message;
-            }
-
-			return Json(data);
-        }
-
-		private async Task<JsonResult> Create<#= ModelType.Name #>(<#= ModelType.Name #> <#= dataParameter #>)
+		public async Task<JsonResult> Post(<#= ModelType.Name #> <#= dataParameter #>)
         {
 			JsonData data = new JsonData();
 
@@ -74,13 +54,13 @@ namespace <#= Namespace #>
         }
 
 		[ValidateAntiForgeryToken]
-		public async Task<JsonResult> Get<#= ModelType.Name #>List()
+		public async Task<JsonResult> Get()
 		{
 			JsonData data = new JsonData();
 
             try
             {
-				data.payload = await (new <#= ModelType.Name #>Service()).Get<#= ModelType.Name #>List();
+				data.payload = await (new <#= ModelType.Name #>Service()).Get<#= ModelType.Name #>();
 
 				data.total = ((List<<#= ModelType.Name #>>)data.payload).Count;
             }
@@ -91,6 +71,35 @@ namespace <#= Namespace #>
 
             return Json(data);
 		}
+
+		[ValidateAntiForgeryToken]
+        public async Task<JsonResult> Get<#= ModelType.Name #>(<#= primaryKeyShortTypeName #> id)
+        {
+
+            JsonData data = new JsonData();
+
+            try
+            {
+                <#= ModelType.Name #> <#= dataParameter #> = await (new <#= ModelType.Name #>Service()).Get<#= ModelType.Name #>(id);
+
+                if (<#= dataParameter #> == null)
+                {
+                    data.errors = "Data not found";
+                    data.total = 0;
+                }
+                else
+                {
+                    data.payload = <#= dataParameter #>;
+                    data.total = 1;
+                }
+            }
+            catch (Exception ex)
+            {
+                data.errors = ex.Message;
+            }
+
+            return Json(data);
+        }
 
 		[ValidateAntiForgeryToken]
 		public async Task<JsonResult> Read<#= ModelType.Name #>(int iPage, int iLength, string strSearch)
@@ -111,7 +120,7 @@ namespace <#= Namespace #>
             return Json(data);
 		}
 
-		private async Task<JsonResult> Update<#= ModelType.Name #>(<#= ModelType.Name #> <#= dataParameter #>)
+		public async Task<JsonResult> Put(<#= primaryKeyShortTypeName #> id, <#= ModelType.Name #> <#= dataParameter #>)
         {
             JsonData data = new JsonData();
 
@@ -130,7 +139,7 @@ namespace <#= Namespace #>
         }
 
 		[ValidateAntiForgeryToken]
-        public async Task<JsonResult> Delete<#= ModelType.Name #>(<#= primaryKeyShortTypeName #> id)
+        public async Task<JsonResult> Delete(<#= primaryKeyShortTypeName #> id)
         {
             JsonData data = new JsonData();
 

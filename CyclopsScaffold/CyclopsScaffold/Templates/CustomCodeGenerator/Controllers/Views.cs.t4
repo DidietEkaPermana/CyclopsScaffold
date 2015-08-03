@@ -1,0 +1,17 @@
+﻿<#@ template language="C#" HostSpecific="True" Debug="True" #>
+<#@ assembly name="System.Core" #>
+<#@ assembly name="EnvDTE" #>
+<#@ parameter type="EnvDTE.CodeType" name="ModelType" #>
+<#@ parameter type="System.String" name="Namespace" #>
+using System.Web.Mvc;
+
+namespace <#= Namespace #>
+{
+    public class <#= ModelType.Name #>Controller : Controller
+    {
+		public ActionResult Index()
+        {
+            return View();
+        }
+    }
+}

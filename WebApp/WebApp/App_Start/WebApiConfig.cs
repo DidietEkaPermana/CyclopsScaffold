@@ -1,7 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿
+
 using System.Web.Http;
+using System.Web.OData.Builder;
+using System.Web.OData.Extensions;
+using WebApp.Models;
+using Repository.Models;
 
 namespace WebApp
 {
@@ -9,13 +12,17 @@ namespace WebApp
     {
         public static void Register(HttpConfiguration config)
         {
-            config.MapHttpAttributeRoutes();
+            ODataModelBuilder builder = new ODataConventionModelBuilder();
 
-            config.Routes.MapHttpRoute(
-                name: "DefaultApi",
-                routeTemplate: "api/{controller}/{id}",
-                defaults: new { id = RouteParameter.Optional }
-            );
+			builder.EntitySet<Product>("Product");
+			builder.EntitySet<OrderLine>("OrderLine");
+			builder.EntitySet<Order>("Order");
+			builder.EntitySet<Occupation>("Occupation");
+			builder.EntitySet<Client>("Client");
+            config.MapODataServiceRoute(
+				routeName: "ODataRoute",
+                routePrefix: "FabricsOdata",
+                model: builder.GetEdmModel());
         }
     }
 }

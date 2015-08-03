@@ -1,0 +1,91 @@
+﻿<#@ template language="C#" HostSpecific="True" #>
+<#@ assembly name="System.Core" #>
+<#@ assembly name="EnvDTE" #>
+<#@ ScaffoldingAssembly Processor="ScaffoldingAssemblyLoader" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="Microsoft.AspNet.Scaffolding.Core.Metadata" #>
+<#@ output extension=".cshtml" #>
+<#@ parameter name="ModelType" type="EnvDTE.CodeType" #>
+<#@ parameter type="System.String" name="Namespace" #>
+<#@ parameter type="System.String" name="dbContext" #>
+<#@ parameter type="Microsoft.AspNet.Scaffolding.Core.Metadata.ModelMetadata" name="MetadataModel" #>
+@{
+    ViewBag.Title = "<#= ModelType.Name #>";
+}
+
+@section Headers {
+    <link href="~/Content/bsComp/bootstrap-select.min.css" rel="stylesheet" />
+    <link href="~/Content/bsComp/bootstrap-datetimepicker.min.css" rel="stylesheet" />
+    <style>
+        .bootstrap-select.btn-group:not(.input-group-btn) {
+            margin-top: 10px;
+        }
+
+        input, select, textarea {
+            max-width: none;
+        }
+    </style>
+}
+@Html.AntiForgeryToken()
+<h2>@ViewBag.Title</h2>
+
+<div id="@ViewBag.Title"></div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script src="~/Scripts/moment.min.js"></script>
+	<script src="~/Scripts/bsComp/bootstrap-modalloading.min.js"></script>
+    <script src="~/Scripts/bsComp/bootstrap-select.min.js"></script>
+    <script src="~/Scripts/bsComp/bootstrap-datetimepicker.min.js"></script>
+    <script src="~/Scripts/bsComp/bootstrapGrid.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            $('#@ViewBag.Title').grid({
+                pageSizeOption: [5, 10, 15, 25, 50],
+                fields: [
+<#
+	IEnumerable<PropertyMetadata> properties = MetadataModel.Properties;
+	bool isFirst = true;
+	foreach (PropertyMetadata property in properties) {
+		if(property.AssociationDirection != Microsoft.AspNet.Scaffolding.Core.Metadata.AssociationDirection.None)
+			continue;
+
+        if(isFirst) {
+			isFirst = false;
+#>					{ title: '<#= property.PropertyName #>', name: '<#= property.PropertyName #>', datatype: '<#= getType(property.ShortTypeName) #>', <# if(property.IsPrimaryKey)#>key: true, display: false <#;#>}
+<#
+        }
+		else{
+#>					,{ title: '<#= property.PropertyName #>', name: '<#= property.PropertyName #>', datatype: '<#= getType(property.ShortTypeName) #>', <# if(property.ShortTypeName == "DateTime")#>format: 'DD MMM YYYY HH:mm:ss',<#;#><# if(property.IsPrimaryKey)#>key: true,<#;#> display: true }
+<#
+        }
+	}
+#>
+                ],
+				serverAction: true, 
+				transport: [{
+					type: 'ODataV4',
+					create: [{url: "/<#= dbContext #>Odata/<#= ModelType.Name #>"}],
+					read: [{url: "/<#= dbContext #>Odata/<#= ModelType.Name #>"}],
+					update: [{url: "/<#= dbContext #>Odata/<#= ModelType.Name #>"}],
+					delete: [{url: "/<#= dbContext #>Odata/<#= ModelType.Name #>"}]
+				}]
+            });
+        })
+    </script>
+}
+
+<#+
+	string getType(string efType){
+		switch(efType){
+			case "DateTime":
+				return "date";
+			case "int":
+				return "int";
+			default:
+				return "string";
+		}
+    }
+ #>
