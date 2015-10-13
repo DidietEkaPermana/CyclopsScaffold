@@ -63,15 +63,14 @@
         }
 	}
 #>
-                ],
-				serverAction: true, 
-				transport: [{
+                ], 
+				transport: {
 					type: 'ODataV4',
-					create: [{url: "/<#= dbContext #>Odata/<#= ModelType.Name #>"}],
-					read: [{url: "/<#= dbContext #>Odata/<#= ModelType.Name #>"}],
-					update: [{url: "/<#= dbContext #>Odata/<#= ModelType.Name #>"}],
-					delete: [{url: "/<#= dbContext #>Odata/<#= ModelType.Name #>"}]
-				}]
+					create: {url: "/<#= dbContext #>Odata/<#= ModelType.Name #>"},
+					read: {url: "/<#= dbContext #>Odata/<#= ModelType.Name #>"},
+					update: {url: "/<#= dbContext #>Odata/<#= ModelType.Name #>"},
+					delete: {url: "/<#= dbContext #>Odata/<#= ModelType.Name #>"}
+				}
             });
         })
     </script>

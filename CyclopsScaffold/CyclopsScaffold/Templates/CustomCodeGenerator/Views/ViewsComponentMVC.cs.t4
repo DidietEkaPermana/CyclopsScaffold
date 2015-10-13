@@ -63,14 +63,13 @@
 	}
 #>
                 ],
-				serverAction: true, 
-				transport: [{
+				transport: {
 					type: 'API',
-					create: [{url: "/<#= ModelType.Name #>/Post", method: "POST"}],
-					read: [{url: "/<#= ModelType.Name #>/Get", method: "POST"}],
-					update: [{url: "/<#= ModelType.Name #>/Put", method: "POST"}],
-					delete: [{url: "/<#= ModelType.Name #>/Delete", method: "POST"}]
-				}]
+					create: {url: "/<#= ModelType.Name #>/Post", method: "POST"},
+					read: {url: "/<#= ModelType.Name #>/Get", method: "POST"},
+					update: {url: "/<#= ModelType.Name #>/Put", method: "POST"},
+					delete: {url: "/<#= ModelType.Name #>/Delete", method: "POST"}
+				}
             });
         })
     </script>

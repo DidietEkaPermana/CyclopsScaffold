@@ -1,0 +1,425 @@
+﻿<#@ template language="C#" HostSpecific="True" #>
+<#@ assembly name="System.Core" #>
+<#@ assembly name="EnvDTE" #>
+<#@ ScaffoldingAssembly Processor="ScaffoldingAssemblyLoader" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ import namespace="Microsoft.AspNet.Scaffolding.Core.Metadata" #>
+<#@ output extension=".cshtml" #>
+<#@ parameter name="ModelType" type="EnvDTE.CodeType" #>
+<#@ parameter type="System.String" name="Namespace" #>
+<#@ parameter type="System.String" name="dbContext" #>
+<#@ parameter type="Microsoft.AspNet.Scaffolding.Core.Metadata.ModelMetadata" name="MetadataModel" #>
+@{
+    ViewBag.Title = "<#= ModelType.Name #>";
+}
+
+@Html.AntiForgeryToken()
+<h2>@ViewBag.Title</h2>
+
+<div class="container-fluid row clearfix" tabindex="999" id="@(ViewBag.Title)Table">
+    <div class="navbar navbar-default">
+        <div class="navbar-header">
+            <button class="navbar-toggle" data-target=".navbar-inverse-collapse" data-toggle="collapse" type="button">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+        </div>
+        <div class="navbar-collapse navbar-inverse-collapse collapse">
+            <ul class="nav navbar-nav">
+                <li><a href="#" onclick="gridPageBar_Add()">Add</a></li>
+            </ul>
+            <form class="navbar-form navbar-right">
+                <input class="form-control col-lg-8" placeholder="Search" type="text" id="@(ViewBag.Title)Table_Search" onkeyup="searchChange(this)" />
+            </form>
+        </div>
+    </div>
+    <table class="table table-hover">
+        <thead>
+            <tr>
+<# 
+	IEnumerable<PropertyMetadata> properties = MetadataModel.Properties;
+	foreach (PropertyMetadata property in properties) {
+		if(property.AssociationDirection != Microsoft.AspNet.Scaffolding.Core.Metadata.AssociationDirection.None || property.IsPrimaryKey)
+			continue;
+#>
+                <th><#= property.PropertyName #></th>
+<# 
+    }
+#>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody id="@(ViewBag.Title)Table_Content"></tbody>
+    </table>
+    <div class="navbar navbar-default">
+        <div class="navbar-header">
+            <button class="navbar-toggle" data-target=".navbar-inverse-collapse" data-toggle="collapse" type="button">
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+        </div>
+        <div class="navbar-collapse navbar-inverse-collapse collapse">
+            <ul class="nav navbar-nav navbar-form">
+                <li>
+                    <select onchange="pageSize_Change(this)">
+                        <option selected="selected">5</option>
+                        <option>10</option>
+                        <option>15</option>
+                        <option>20</option>
+                        <option>25</option>
+                    </select>
+                </li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right">
+                <li>
+                    <a href="#" onclick="getData()">
+                        <span class="glyphicon glyphicon-refresh" aria-hidden="true"></span>
+                    </a>
+                </li>
+            </ul>
+            <ul class="nav navbar-nav navbar-right" id="@(ViewBag.Title)gridPageBar"></ul>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="@(ViewBag.Title)AddEditModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                <h4 class="modal-title">Modal title</h4>
+            </div>
+            <div class="modal-body">
+                <form class="form-horizontal">
+                    <input type="hidden" class="form-control" id="input<#= MetadataModel.PrimaryKeys[0].PropertyName #>">
+                    <fieldset>
+<# 
+	foreach (PropertyMetadata property in properties) {
+		if(property.AssociationDirection != Microsoft.AspNet.Scaffolding.Core.Metadata.AssociationDirection.None || property.IsPrimaryKey)
+			continue;
+#>
+                        <div class="form-group">
+                            <label for="input<#= property.PropertyName #>" class="col-lg-2 control-label"><#= property.PropertyName #></label>
+                            <div class="col-lg-6">
+                                <input type="text" class="form-control" id="input<#= property.PropertyName #>" placeholder="<#= property.PropertyName #>">
+                            </div>
+                        </div>
+<# 
+    }
+#>
+                    </fieldset>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <a class="btn btn-default" data-dismiss="modal">Close</a>
+                <button type="button" class="btn btn-primary" onclick="save_Click()">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script>
+		var RequestVerificationToken = $('input[name=__RequestVerificationToken]').val();
+        var dataGrid;
+        var totalRow;
+        var pageGrid = 1;
+        var rowLen = 5;
+		var fields = [
+<#
+	bool isFirst = true;
+	foreach (PropertyMetadata property in properties) {
+		if(property.AssociationDirection != Microsoft.AspNet.Scaffolding.Core.Metadata.AssociationDirection.None)
+			continue;
+
+        if(isFirst) {
+			isFirst = false;
+#>					{ title: '<#= property.PropertyName #>', name: '<#= property.PropertyName #>', datatype: '<#= getType(property.ShortTypeName) #>', <# if(property.IsPrimaryKey)#>key: true, display: false <#;#>}
+<#
+        }
+		else{
+#>					,{ title: '<#= property.PropertyName #>', name: '<#= property.PropertyName #>', datatype: '<#= getType(property.ShortTypeName) #>', <# if(property.ShortTypeName == "DateTime")#>format: 'DD MMM YYYY HH:mm:ss',<#;#><# if(property.IsPrimaryKey)#>key: true,<#;#> display: true }
+<#
+        }
+	}
+#>
+        ];
+		var gridCreateUrl = "/<#= dbContext #>Odata/<#= ModelType.Name #>";
+        var gridReadUrl = "/<#= dbContext #>Odata/<#= ModelType.Name #>";
+        var gridUpdateUrl = "/<#= dbContext #>Odata/<#= ModelType.Name #>";
+		var gridDeleteUrl = "/<#= dbContext #>Odata/<#= ModelType.Name #>";
+        
+        $(document).ready(function () {
+            getData();
+        })
+
+        function searchChange(arg) {
+            var strFilter = $(arg).val();
+            if (strFilter.length > 2 || strFilter.length == 0) {
+                refreshGrid();
+            }
+        }
+
+        function pageSize_Change(arg) {
+            if (typeof dataGrid != "undefined") {
+                rowLen = $(arg).val();
+                pageGrid = 1;
+                refreshGrid();
+            }
+        }
+
+        function getData() {
+            var postData;
+
+            postData = { "__RequestVerificationToken": RequestVerificationToken };
+
+            $.ajax({
+                method: "GET",
+                url: gridReadUrl,
+                data: postData
+            }).success(function (result) {
+                if (result.value.length > 0) {
+                    dataGrid = result.value;
+                    totalRow = result.value.length;
+                    refreshGrid();
+                }
+                else if (result.value.length == 0) {
+                    $("#@(ViewBag.Title)Table_Content").empty();
+                    var htmlContent = '<tr>';
+                    htmlContent += '<td colspan="' + fields.length + '">No data exists</td>';
+                    htmlContent += '</tr>';
+                    $("#@(ViewBag.Title)Table_Content").append(htmlContent);
+                }
+                else {
+                    alert("Generic error");
+                }
+            }).fail(function (jqXHR, textStatus, errorThrown) {
+                alert("Got some error: " + errorThrown);
+            });
+        }
+
+        function refreshGrid() {
+            var dataToDisplay;
+            var datalen = (pageGrid * rowLen);
+            var i = (pageGrid * rowLen) - rowLen;
+
+            var strFilter = $('#@(ViewBag.Title)Table_Search').val();
+
+            if (strFilter.length > 0)
+                dataToDisplay = filterData(strFilter);
+            else
+                dataToDisplay = dataGrid;
+
+            if (datalen > dataToDisplay.length)
+                datalen = dataToDisplay.length;
+
+            if (i > datalen) {
+                i = 0;
+                datalen = rowLen;
+
+                if (datalen > dataToDisplay.length)
+                    datalen = dataToDisplay.length;
+            }
+
+            $("#@(ViewBag.Title)Table_Content").empty();
+
+            for (; i < datalen; i++) {
+                var htmlContent = '<tr>';
+
+                var j = 0;
+                var keyID = '';
+                for (; j < fields.length; j++) {
+                    if (fields[j]['display'] != false) {
+                        htmlContent += '<td>' + dataToDisplay[i][fields[j]['name']] + '</td>';
+                    }
+
+                    if (fields[j]['key'] == true) {
+                        keyID += dataToDisplay[i][fields[j]['name']];
+                    }
+                }
+
+                htmlContent += '<td><button type="button" class="btn btn-default btn-xs " data-id="' + keyID + '" onclick="gridPageBar_Edit(this)">Edit</button>&nbsp;<button type="button" class="btn btn-default btn-xs" data-id="' + keyID + '" onclick="gridPageBar_Delete(this)">Delete</button></td>';
+
+                htmlContent += '</tr>';
+                $('#@(ViewBag.Title)Table_Content').append(htmlContent);
+            }
+
+            gridPageBar_init(dataToDisplay);
+        }
+
+        function gridPageBar_init(data) {
+            var totData = data.length;
+
+            var pageres = totData % rowLen;
+            var page = (totData - pageres) / rowLen;
+            if (pageres > 0)
+                page++;
+
+            $("#@(ViewBag.Title)gridPageBar").empty();
+            var htmlContent = '';
+            if (this.pageGrid == 1) {
+                htmlContent += '<li class="disabled"><a href="#"><span class="glyphicon glyphicon-fast-backward"></span></a></li>';
+                htmlContent += '<li class="disabled"><a href="#"><span class="glyphicon glyphicon-backward"></span></a></li>';
+            }
+            else {
+                htmlContent += '<li><a href="#" id="@(ViewBag.Title)FirstPage" data-page="1"><span class="glyphicon glyphicon-fast-backward"></span></a></li>';
+                htmlContent += '<li><a href="#" id="@(ViewBag.Title)PrevPage" data-page="' + (pageGrid - 1) + '"><span class="glyphicon glyphicon-backward"></span></a></li>';
+            }
+
+            htmlContent += '<li><a href="#">Page ' + pageGrid + ' of ' + page + '</a></li>';
+
+            if (this.pageGrid == page) {
+                htmlContent += '<li class="disabled"><a href="#"><span class="glyphicon glyphicon-forward"></span></a></li>';
+                htmlContent += '<li class="disabled"><a href="#"><span class="glyphicon glyphicon-fast-forward"></span></a></li>';
+            }
+            else {
+                htmlContent += '<li><a href="#" id="@(ViewBag.Title)NextPage" data-page="' + (pageGrid + 1) + '"><span class="glyphicon glyphicon-forward"></span></a></li>';
+                htmlContent += '<li><a href="#" id="@(ViewBag.Title)LastPage" data-page="' + page + '"><span class="glyphicon glyphicon-fast-forward"></span></a></li>';
+            }
+
+            $("#@(ViewBag.Title)gridPageBar").append(htmlContent);
+
+            //wired event
+            $('#@(ViewBag.Title)FirstPage').click(gridPageBar_Change);
+            $('#@(ViewBag.Title)PrevPage').click(gridPageBar_Change);
+            $('#@(ViewBag.Title)NextPage').click(gridPageBar_Change);
+            $('#@(ViewBag.Title)LastPage').click(gridPageBar_Change);
+        }
+
+        function gridPageBar_Change() {
+            pageGrid = $(this).data("page");
+            refreshGrid();
+        }
+
+        function filterData(arg) {
+            var dataToDisplay = [];
+            for (var i = 0; i < dataGrid.length; i++) {
+                var j = 0;
+                var strSearch = '';
+                for (; j < fields.length; j++) {
+                    if (fields[j]['display'] != false) {
+                        strSearch += this.dataGrid[i][fields[j]['name']];
+                    }
+                }
+
+                if (strSearch.toLowerCase().indexOf(arg.toLowerCase()) >= 0)
+                    dataToDisplay.push(this.dataGrid[i]);
+            }
+
+            return dataToDisplay;
+        }
+
+        function gridPageBar_Add(arg) {
+            $('form.form-horizontal', '#@(ViewBag.Title)AddEditModal')[0].reset();
+            $('#@(ViewBag.Title)AddEditModal .modal-title').html('Add @(ViewBag.Title)');
+
+            for (var i = 0; i < fields.length; i++) {
+                if (fields[i]['datatype'] == 'int')
+                    $('#input' + fields[i]['name']).val(0);
+                else
+                    $('#input' + fields[i]['name']).val('');
+            }
+
+            $('#@(ViewBag.Title)AddEditModal').modal();
+        }
+
+        function gridPageBar_Edit(arg) {
+            var Id = $(arg).data("id");
+
+            $('form.form-horizontal', '#@(ViewBag.Title)AddEditModal')[0].reset();
+            $('#@(ViewBag.Title)AddEditModal .modal-title').html('Edit @(ViewBag.Title) ' + Id);
+
+            var data = getObjects(dataGrid, "<#= MetadataModel.PrimaryKeys[0].PropertyName #>", Id);
+
+            for (var i = 0; i < fields.length; i++) {
+                $('#input' + fields[i]['name']).val(data[0][fields[i]['name']]);
+            }
+
+            $('#@(ViewBag.Title)AddEditModal').modal();
+        }
+
+        function save_Click() {
+            var data = {};
+
+            data["__RequestVerificationToken"] = RequestVerificationToken;
+
+            for (var j = 0; j < fields.length; j++) {
+                data[fields[j]['name']] = $('#input' + fields[j]['name']).val();
+            }
+
+			var key = data["<#= MetadataModel.PrimaryKeys[0].PropertyName #>"];
+
+            if (key == 0) {
+                $.ajax({
+                    method: "POST",
+                    url: gridCreateUrl,
+                    data: data
+                }).success(function (result) {
+                    getData();
+                    $('#@(ViewBag.Title)AddEditModal').modal('hide');
+                }).fail(function (jqXHR, textStatus, errorThrown) {
+                    alert("Got some error: " + errorThrown);
+                });
+            }
+            else {
+                $.ajax({
+                    method: "PUT",
+                    url: gridUpdateUrl + "(" + key + ")",
+                    data: data
+                }).success(function (result) {
+                    getData();
+                    $('#@(ViewBag.Title)AddEditModal').modal('hide');
+                }).fail(function (jqXHR, textStatus, errorThrown) {
+                    alert("Got some error: " + errorThrown);
+                });
+            }
+        }
+
+        function gridPageBar_Delete(arg) {
+            if (confirm("Are you sure you want to delete this record?")) {
+                $.ajax({
+                    method: "DELETE",
+                    url: gridDeleteUrl + "(" + $(arg).data("id") + ")",
+                    data: { "__RequestVerificationToken": RequestVerificationToken}
+                }).success(function (result) {
+                    alert("Record deleted");
+                    getData();
+                }).fail(function (jqXHR, textStatus, errorThrown) {
+                    alert("Got some error: " + errorThrown);
+                });
+            }
+        }
+
+        function getObjects(obj, key, val) {
+            var objects = [];
+            for (var i in obj) {
+                if (!obj.hasOwnProperty(i)) continue;
+                if (typeof obj[i] == 'object') {
+                    objects = objects.concat(this.getObjects(obj[i], key, val));
+                } else if (i == key && obj[key] == val) {
+                    objects.push(obj);
+                }
+            }
+            return objects;
+        }
+    </script>
+}
+
+<#+
+	string getType(string efType){
+		switch(efType){
+			case "DateTime":
+				return "date";
+			case "int":
+				return "int";
+			default:
+				return "string";
+		}
+    }
+ #>

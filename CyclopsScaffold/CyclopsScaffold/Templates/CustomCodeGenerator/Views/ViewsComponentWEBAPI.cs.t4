@@ -9,7 +9,6 @@
 <#@ output extension=".cshtml" #>
 <#@ parameter name="ModelType" type="EnvDTE.CodeType" #>
 <#@ parameter type="System.String" name="Namespace" #>
-<#@ parameter type="System.String" name="dbContext" #>
 <#@ parameter type="Microsoft.AspNet.Scaffolding.Core.Metadata.ModelMetadata" name="MetadataModel" #>
 @{
     ViewBag.Title = "<#= ModelType.Name #>";
@@ -65,11 +64,11 @@
 #>
                 ],
 				transport: {
-					type: 'ODataV3',
-					create: {url: "/<#= dbContext #>Odata/<#= ModelType.Name #>"},
-					read: {url: "/<#= dbContext #>Odata/<#= ModelType.Name #>"},
-					update: {url: "/<#= dbContext #>Odata/<#= ModelType.Name #>"},
-					delete: {url: "/<#= dbContext #>Odata/<#= ModelType.Name #>"}
+					type: 'API',
+					create: {url: "/api/<#= ModelType.Name #>"},
+					read: {url: "/api/<#= ModelType.Name #>"},
+					update: {url: "/api/<#= ModelType.Name #>"},
+					delete: {url: "/api/<#= ModelType.Name #>"}
 				}
             });
         })
