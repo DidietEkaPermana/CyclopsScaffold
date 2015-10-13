@@ -215,6 +215,10 @@
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Areas\Fabrics\Controllers\ClientController.cs" />
     <Compile Include="Areas\Fabrics\Controllers\OccupationController.cs" />
+    <Compile Include="Areas\Fabrics\Controllers\OData\ClientController.cs" />
+    <Compile Include="Areas\Fabrics\Controllers\OData\OccupationController.cs" />
+    <Compile Include="Areas\Fabrics\Controllers\OData\OrderController.cs" />
+    <Compile Include="Areas\Fabrics\Controllers\OData\ProductController.cs" />
     <Compile Include="Areas\Fabrics\Controllers\OrderController.cs" />
     <Compile Include="Areas\Fabrics\Controllers\ProductController.cs" />
     <Compile Include="Areas\Fabrics\FabricsAreaRegistration.cs" />
